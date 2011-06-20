@@ -216,15 +216,11 @@ begin
   if (USE_FORM) then
   begin
     try
-      SafeInitForm;
-      SafeShowFormModal;
-    finally
-      AnimTimer.Enabled := False;
-      AnimTimer.Free;
-      MainForm.Free;
-      Script_Form.Free;
+      safeCall('init');
     except
-      Writeln(ExceptionToString(ExceptionType, ExceptionParam));
+      writeln(ExceptionToString(ExceptionType, ExceptionParam));
+    finally
+      safeCall('freeForm');
     end;
 
     HowManyPlayers := Length(MSI_Players);
@@ -233,7 +229,7 @@ begin
     for i := 0 to High(MSI_Players) do
       SetLength(MSI_Players[i].Scripts, 100);
 
-    if (not ScriptReady) then
+    if (not MSI_Ready) then
       TerminateScript;
   end else begin
     DeclareSettings;
