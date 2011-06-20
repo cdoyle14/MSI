@@ -216,11 +216,11 @@ begin
   if (USE_FORM) then
   begin
     try
-      safeCall('init');
+      formSafeCall('formInit');
     except
       writeln(ExceptionToString(ExceptionType, ExceptionParam));
     finally
-      safeCall('freeForm');
+      formSafeCall('formFree');
     end;
 
     HowManyPlayers := Length(MSI_Players);
