@@ -30,7 +30,6 @@ begin
   MSI_SetupVars[SETUP_HUMAN_BREAK]   := True;         // Take more human like breaks
   MSI_SetupVars[SETUP_SWITCH_WORLDS] := True;         // Switch worlds when switching players or after breaks
   MSI_SetupVars[SETUP_PRINT_REPORT]  := True;         // Will only print the short report in the debug box (will still save long report to file)
-  MSI_SetupVars[SETUP_BREAK_TIME]    := 15;           // Single player only - how long to break for (in minutes)
   MSI_SetupVars[SETUP_DEBUG_LEVEL]   := 10;           // The lower the number, the less the script will debug
   MSI_SetupVars[SETUP_ANTIBAN_WAIT]  := 15000;        // Minimum time to wait between antibans (in milliseconds 1000ms = 1s)
   MSI_SetupVars[SETUP_RANDOMS_WAIT]  := 10000;        // Minimum time to wait between randoms checks
@@ -63,12 +62,12 @@ begin
     Location   := 0;       // See instructions at the top
     BreakLoads := 0;       // Amount of loads before breaking/switching players; leave 0 to not take breaks
     BreakTime  := 0;       // Amount of time (in minutes) before breaking/witching; leave 0 to not take breaks
+    BreakFor   := 0;       // How long (in minutes) to break for if taking breaks (only called in single player)
     TotalLoads := 0;       // Total loads for the player to do; leave 0 if using TotalTime or to go forever
     TotalTime  := 0;       // How long for the player to run? (in minutes); leave 0 if using TotalLoads or go forever
 
     with Scripts[0] do
     begin
-      Name := SCRIPT_VE_OAKS;
       // Copy/paste the script attributes from the setup thread
     end;
   end;
@@ -83,6 +82,7 @@ begin
     Location   := ;
     BreakLoads := 0;
     BreakTime  := 0;
+    BreakFor   := ;
     TotalLoads := 0;
     TotalTime  := 0;
 
@@ -101,6 +101,7 @@ begin
     Location   := ;
     BreakLoads := ;
     BreakTime  := ;
+    BreakFor   := ;
     TotalLoads := ;
     TotalTime  := ;
 
@@ -119,6 +120,7 @@ begin
     Location   := ;
     BreakLoads := ;
     BreakTime  := ;
+    BreakFor   := ;
     TotalLoads := ;
     TotalTime  := ;
 
@@ -137,6 +139,7 @@ begin
     Location   := ;
     BreakLoads := ;
     BreakTime  := ;
+    BreakFor   := ;
     TotalLoads := ;
     TotalTime  := ;
 
@@ -155,6 +158,7 @@ begin
     Location   := ;
     BreakLoads := ;
     BreakTime  := ;
+    BreakFor   := ;
     TotalLoads := ;
     TotalTime  := ;
 
@@ -173,6 +177,7 @@ begin
     Location   := ;
     BreakLoads := ;
     BreakTime  := ;
+    BreakFor   := ;
     TotalLoads := ;
     TotalTime  := ;
 
@@ -191,6 +196,7 @@ begin
     Location   := ;
     BreakLoads := ;
     BreakTime  := ;
+    BreakFor   := ;
     TotalLoads := ;
     TotalTime  := ;
 

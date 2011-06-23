@@ -46,7 +46,7 @@ const
   CHECKLIST_COUNT = 1;
     CHECKLIST_REWARDS = 0;
 
-  EDIT_COUNT = 8;
+  EDIT_COUNT = 9;
     EDIT_USERNAME     = 0;
     EDIT_ALIAS        = 1;
     EDIT_PASSWORD     = 2;
@@ -55,25 +55,28 @@ const
     EDIT_TIME_TOTAL   = 5;
     EDIT_LOADS_BREAK  = 6;
     EDIT_LOADS_TOTAL  = 7;
+    EDIT_BREAK_FOR    = 8;
 
   COMBO_COUNT = 3;
     COMBO_ACTIVE    = 0;
     COMBO_MEMBER    = 1;
     COMBO_LAMPSKILL = 2;
 
-  BUTTON_COUNT = 10;
-    BUTTON_MAIN            = 0;
-    BUTTON_SETTINGS        = 1;
-    BUTTON_PLAYER          = 2;
-    BUTTON_PLAYER_ADD      = 3;
-    BUTTON_PLAYER_DELETE   = 4;
-    BUTTON_PLAYER_SAVE     = 5;
-    BUTTON_PLAYER_CANCEL   = 6;
-    BUTTON_SCRIPT_ADD      = 7;
-    BUTTON_SCRIPT_DELETE   = 8;
-    BUTTON_SCRIPT_SETTINGS = 9;
+  BUTTON_COUNT = 12;
+    BUTTON_MAIN               = 0;
+    BUTTON_SETTINGS           = 1;
+    BUTTON_PLAYER             = 2;
+    BUTTON_PLAYER_ADD         = 3;
+    BUTTON_PLAYER_DELETE      = 4;
+    BUTTON_PLAYER_SAVE        = 5;
+    BUTTON_PLAYER_CANCEL      = 6;
+    BUTTON_SCRIPT_ADD         = 7;
+    BUTTON_SCRIPT_DELETE      = 8;
+    BUTTON_SCRIPT_SETTINGS    = 9;
+    BUTTON_SCRIPT_LIST_ADD    = 10;
+    BUTTON_SCRIPT_LIST_CANCEL = 11;
 
-  LABEL_COUNT = 15;
+  LABEL_COUNT = 16;
     LABEL_REQUIRED     = 0;
     LABEL_PLAYERS      = 1;
     LABEL_SCRIPTS      = 2;
@@ -87,8 +90,9 @@ const
     LABEL_TIME_BREAK   = 10;
     LABEL_LOADS_TOTAL  = 11;
     LABEL_LOADS_BREAK  = 12;
-    LABEL_LAMPSKILL    = 13;
-    LABEL_REWARDS      = 14;
+    LABEL_BREAK_FOR    = 13;
+    LABEL_LAMPSKILL    = 14;
+    LABEL_REWARDS      = 15;
 
 // Other variables
 var
@@ -105,7 +109,7 @@ var
   checkLists: array[0..(CHECKLIST_COUNT - 1)] of TCheckListBox;
   edits: array[0..(EDIT_COUNT - 1)] of TEdit;
   labels: array[0..(LABEL_COUNT - 1)] of TLabel;
-  ComboBoxes: array[0..(COMBO_COUNT - 1)] of TComboBox;
+  comboBoxes: array[0..(COMBO_COUNT - 1)] of TComboBox;
   buttons: array[0..(BUTTON_COUNT - 1)] of TButton;
 
   openDialog: TOpenDialog;
@@ -235,6 +239,15 @@ end;
 
 procedure scriptListClicks(sender: TObject);
 begin
+  case sender of
+    lists[LIST_ALL_SCRIPTS], buttons[BUTTON_SCRIPT_LIST_ADD]:
+      with lists[LIST_ALL_SCRIPTS] do
+      begin
+      end;
+
+    buttons[BUTTON_SCRIPT_LIST_CANCEL]:
+      forms[FORM_SCRIPT_LIST].visible := false;
+  end;
 end;
 
 procedure scriptListCreate();
@@ -260,7 +273,7 @@ begin
   with forms[FORM_SCRIPT_LIST] do
   begin
     width := 400;
-    height := 400;
+    height := 410;
     caption := 'MSI''s Supported Scripts';
   end;
 
@@ -271,6 +284,7 @@ begin
     setBounds(0, 0, forms[FORM_SCRIPT_LIST].width, forms[FORM_SCRIPT_LIST].height - 40);
     hint := 'Select which script you want to add';
     columns := 2;
+    onDblClick := @scriptListClicks;
   end;
 
   for i := 0 to high(scripts) do
@@ -285,6 +299,30 @@ begin
         items.add('     ' + MSI_Scripts[scripts[i][j]].name);
       items.add('');
     end;
+  end;
+
+  buttons[BUTTON_SCRIPT_LIST_ADD] := TButton.create(forms[FORM_SCRIPT_LIST]);
+  with buttons[BUTTON_SCRIPT_LIST_ADD] do
+  begin
+    parent := lists[LIST_ALL_SCRIPTS].parent;
+    width := 100;
+    top := (lists[LIST_ALL_SCRIPTS].height + 7);
+    left := 90;
+    hint := 'Adds the selected script to the player''s script list';
+    caption := 'Add';
+    onClick := @scriptListClicks;
+  end;
+
+  buttons[BUTTON_SCRIPT_LIST_CANCEL] := TButton.create(forms[FORM_SCRIPT_LIST]);
+  with buttons[BUTTON_SCRIPT_LIST_CANCEL] do
+  begin
+    parent := lists[LIST_ALL_SCRIPTS].parent;
+    width := buttons[BUTTON_SCRIPT_LIST_ADD].width;
+    top := buttons[BUTTON_SCRIPT_LIST_ADD].top;
+    left := (buttons[BUTTON_SCRIPT_LIST_ADD].left + buttons[BUTTON_SCRIPT_LIST_ADD].width + 10);
+    hint := 'Close script list without saving';
+    caption := 'Cancel';
+    onClick := @scriptListClicks;
   end;
 end;
 
@@ -519,8 +557,8 @@ begin
     maxLength := 4;
   end;
 
-  ComboBoxes[COMBO_ACTIVE] := TComboBox.create(forms[FORM_MAIN]);
-  with ComboBoxes[COMBO_ACTIVE] do
+  comboBoxes[COMBO_ACTIVE] := TComboBox.create(forms[FORM_MAIN]);
+  with comboBoxes[COMBO_ACTIVE] do
   begin
     parent := lists[LIST_PLAYERS].parent;
     left := currentLeft;
@@ -531,12 +569,12 @@ begin
     hint := 'Do you want to use this player?';
   end;
 
-  ComboBoxes[COMBO_MEMBER] := TComboBox.create(forms[FORM_MAIN]);
-  with ComboBoxes[COMBO_MEMBER] do
+  comboBoxes[COMBO_MEMBER] := TComboBox.create(forms[FORM_MAIN]);
+  with comboBoxes[COMBO_MEMBER] do
   begin
     parent := lists[LIST_PLAYERS].parent;
     left := currentLeft;
-    top := (ComboBoxes[COMBO_ACTIVE].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
+    top := (comboBoxes[COMBO_ACTIVE].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     text := 'false';
     items.add('true');
     items.add('false');
@@ -586,7 +624,7 @@ begin
   begin
     parent := lists[LIST_PLAYERS].parent;
     caption := 'Active';
-    top := (ComboBoxes[COMBO_ACTIVE].top  + CENTER_LABELS);
+    top := (comboBoxes[COMBO_ACTIVE].top  + CENTER_LABELS);
     left := currentLeft;
   end;
 
@@ -595,7 +633,7 @@ begin
   begin
     parent := lists[LIST_PLAYERS].parent;
     caption := 'Member *';
-    top := (ComboBoxes[COMBO_MEMBER].top  + CENTER_LABELS);
+    top := (comboBoxes[COMBO_MEMBER].top  + CENTER_LABELS);
     left := currentLeft;
   end;
 
@@ -696,7 +734,7 @@ begin
   with forms[FORM_SETTINGS_PLAYER] do
   begin
     width := 475;
-    height := 195;
+    height := 225;
     visible := false;
   end;
 
@@ -744,11 +782,22 @@ begin
     text := '0';
   end;
 
-  ComboBoxes[COMBO_LAMPSKILL] := TComboBox.create(forms[FORM_SETTINGS_PLAYER]);
-  with ComboBoxes[COMBO_LAMPSKILL] do
+  edits[EDIT_BREAK_FOR] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
+  with edits[EDIT_BREAK_FOR] do
+  begin
+    parent := edits[EDIT_TIME_TOTAL].parent;
+    top := (edits[EDIT_LOADS_BREAK].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
+    left := edits[EDIT_TIME_TOTAL].left;;
+    hint := 'How long for this player to break for (in minutes) if taking breaks.  ' +#13+#10+
+            'This is only used for single player or if there''s one player active';
+    text := '15';
+  end;
+
+  comboBoxes[COMBO_LAMPSKILL] := TComboBox.create(forms[FORM_SETTINGS_PLAYER]);
+  with comboBoxes[COMBO_LAMPSKILL] do
   begin
     parent := edits[EDIT_LOADS_TOTAL].parent;
-    top := (edits[EDIT_LOADS_BREAK].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
+    top := (edits[EDIT_BREAK_FOR].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;
     hint := 'Choose the skill you want to gain from experience lamps';
     text := 'Mining';
@@ -780,6 +829,15 @@ begin
     left := labels[LABEL_TIME_BREAK].left;
   end;
 
+  labels[LABEL_BREAK_FOR] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
+  with labels[LABEL_BREAK_FOR] do
+  begin
+    parent := edits[EDIT_TIME_TOTAL].parent;
+    caption := 'Break For';
+    top := (edits[EDIT_BREAK_FOR].top + CENTER_LABELS);
+    left := labels[LABEL_TIME_BREAK].left;
+  end;
+
   labels[LABEL_LOADS_BREAK] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
   with labels[LABEL_LOADS_BREAK] do
   begin
@@ -803,7 +861,7 @@ begin
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
     caption := 'Lamp Skill';
-    top := (ComboBoxes[COMBO_LAMPSKILL].top + CENTER_LABELS);
+    top := (comboBoxes[COMBO_LAMPSKILL].top + CENTER_LABELS);
     left := labels[LABEL_TIME_BREAK].left;
   end;
 
@@ -824,7 +882,7 @@ begin
     left := labels[LABEL_REWARDS].left;
     top := (labels[LABEL_REWARDS].top + labels[LABEL_REWARDS].height);
     width := PLAYER_LIST_WIDTH;
-    height := (ComboBoxes[COMBO_LAMPSKILL].top - 5);
+    height := (comboBoxes[COMBO_LAMPSKILL].top - 5);
     showHint := true;
     s := ['XP Lamp', 'Costume', 'Coins', 'Gem', 'Clay Ore', 'Coal Ore',
           'Mystery Box', 'Emote'];
@@ -839,7 +897,7 @@ begin
     caption := 'Save';
     hint := 'Save the player''s settings';
     width := 100;
-    top := (ComboBoxes[COMBO_LAMPSKILL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
+    top := (comboBoxes[COMBO_LAMPSKILL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := 125;
   end;
 
@@ -882,8 +940,8 @@ begin
       showHint := true;
     end;
 
-  for i := 0 to high(ComboBoxes) do
-    with ComboBoxes[i] do
+  for i := 0 to high(comboBoxes) do
+    with comboBoxes[i] do
     begin
       showHint := true;
       onKeyPress := @preventTyping;
@@ -895,7 +953,8 @@ begin
       height := 25;
       font.style := [fsItalic];
       showHint := true;
-      onClick := @onClicks;
+      if (onClick = nil) then
+        onClick := @onClicks;
     end;
 
   forms[FORM_MAIN].ShowModal;

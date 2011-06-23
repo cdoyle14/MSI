@@ -733,10 +733,9 @@ const
   SETUP_PRINT_REPORT  = 15;
 
   // Integers
-  SETUP_BREAK_TIME    = 20;
-  SETUP_DEBUG_LEVEL   = 21;
-  SETUP_ANTIBAN_WAIT  = 22;
-  SETUP_RANDOMS_WAIT  = 23;
+  SETUP_DEBUG_LEVEL   = 20;
+  SETUP_ANTIBAN_WAIT  = 21;
+  SETUP_RANDOMS_WAIT  = 22;
 
   // Strings
   SETUP_STATS_ID      = 30;
@@ -1024,6 +1023,7 @@ type
     BreakLoads   : Integer;
     TotalTime    : Integer;
     BreakTime    : Integer;
+    BreakFor     : Integer;
     CurrentPoint : Integer;
     Scripts      : TScriptSetupArray;
 
