@@ -1,5 +1,4 @@
 
-// Size constants
 const
   // For Username/Password/Pin/etc.
   PLAYER_SPACING         = 10;  // Spacing between components
@@ -8,6 +7,9 @@ const
 
   HEIGHT_TEXT_COMPONENTS = 20;
   CENTER_LABELS          = 3; // Pixels needed to centre labels in components
+
+  COLOR_BACKGROUND       = 2765111;
+  COLOR_FONT             = 2070783;
 
 // Component constants
 const
@@ -25,7 +27,8 @@ const
       ITEM_CLOSE = 4;
 
     MENU_START = 1;
-      ITEM_RUN = 1;
+      ITEM_MAIN = 1;
+      ITEM_RUN  = 2;
 
     MENU_HELP = 2;
       ITEM_FORUM = 1;
@@ -63,7 +66,7 @@ const
     COMBO_LAMPSKILL = 2;
 
   BUTTON_COUNT = 12;
-    BUTTON_MAIN               = 0;
+    BUTTON_CONTINUE           = 0;
     BUTTON_SETTINGS           = 1;
     BUTTON_PLAYER             = 2;
     BUTTON_PLAYER_ADD         = 3;
@@ -191,6 +194,13 @@ begin
         forms[FORM_MAIN].modalResult := mrOk;
       end;
 
+    mainMenuItems[MENU_START][ITEM_MAIN]:
+      begin
+        panels[PANEL_PLAYER].visible := false;
+        panels[PANEL_SETTINGS].visible := false;
+        panels[PANEL_MAIN].visible := true;
+      end;
+
     mainMenuItems[MENU_HELP][ITEM_FORUM]:
       openWebPage('http://villavu.com/forum/index.php');
 
@@ -213,7 +223,7 @@ var
 begin
   // The first one ('File') is the heading, the rest are sub-options
   mainMenuNames[MENU_FILE] := ['File', 'New', 'Load', 'Save', 'Close'];
-  mainMenuNames[MENU_START] := ['Start', 'Run'];
+  mainMenuNames[MENU_START] := ['Start', 'Show Logo', 'Run'];
   mainMenuNames[MENU_HELP] := ['Help', 'SRL-Forums', 'MSI Help', 'Documentation', 'What is MSI?'];
 
   mainMenu := TMainMenu.create(forms[FORM_MAIN]);
@@ -363,35 +373,29 @@ begin
         labels[LABEL_SCRIPTS].caption := lists[LIST_PLAYERS].items.strings[i] + '''s Scripts';
       end;
 
-    buttons[BUTTON_MAIN]:
+    buttons[BUTTON_CONTINUE]:
       begin
-        buttons[BUTTON_MAIN].Enabled := false;
-        buttons[BUTTON_PLAYER].Enabled := true;
-        buttons[BUTTON_SETTINGS].Enabled := true;
+        buttons[BUTTON_PLAYER].enabled := true;
+        buttons[BUTTON_SETTINGS].enabled := false;
 
-        panels[PANEL_MAIN].visible := true;
-        panels[PANEL_PLAYER].visible := false;
-        panels[PANEL_SETTINGS].visible := false;
+        panels[PANEL_MAIN].visible := false;
+        panels[PANEL_SETTINGS].visible := true;
       end;
 
     buttons[BUTTON_SETTINGS]:
       begin
-        buttons[BUTTON_MAIN].Enabled := true;
-        buttons[BUTTON_PLAYER].Enabled := true;
-        buttons[BUTTON_SETTINGS].Enabled := false;
+        buttons[BUTTON_PLAYER].enabled := true;
+        buttons[BUTTON_SETTINGS].enabled := false;
 
-        panels[PANEL_MAIN].visible := false;
         panels[PANEL_PLAYER].visible := false;
         panels[PANEL_SETTINGS].visible := true;
       end;
 
     buttons[BUTTON_PLAYER]:
       begin
-        buttons[BUTTON_MAIN].Enabled := true;
-        buttons[BUTTON_PLAYER].Enabled := false;
-        buttons[BUTTON_SETTINGS].Enabled := true;
+        buttons[BUTTON_PLAYER].enabled := false;
+        buttons[BUTTON_SETTINGS].enabled := true;
 
-        panels[PANEL_MAIN].visible := false;
         panels[PANEL_PLAYER].visible := true;
         panels[PANEL_SETTINGS].visible := false;
       end;
@@ -439,38 +443,26 @@ begin
   saveDialog.title := 'Save your player file';
   saveDialog.defaultExt := '.txt';
 
-  buttons[BUTTON_MAIN] := TButton.create(forms[FORM_MAIN]);
-  with buttons[BUTTON_MAIN] do
-  begin
-    parent := forms[FORM_MAIN];
-    width := 150;
-    top := 7;
-    left := 100;
-    hint := 'Takes you to the main page';
-    caption := 'Main Page';
-    Enabled := false;
-  end;
-
   buttons[BUTTON_SETTINGS] := TButton.create(forms[FORM_MAIN]);
   with buttons[BUTTON_SETTINGS] do
   begin
     parent := forms[FORM_MAIN];
-    width := buttons[BUTTON_MAIN].width;
-    top := buttons[BUTTON_MAIN].top;
-    left := (buttons[BUTTON_MAIN].left + buttons[BUTTON_MAIN].width + 10);
+    width := 150;
+    top := 7;
+    left := 7;
     hint := 'Takes you to the script settings page';
-    caption := 'Script Settings';
+    caption := '<< Script Settings     ';
   end;
 
   buttons[BUTTON_PLAYER] := TButton.create(forms[FORM_MAIN]);
   with buttons[BUTTON_PLAYER] do
   begin
     parent := forms[FORM_MAIN];
-    width := buttons[BUTTON_MAIN].width;
-    top := buttons[BUTTON_MAIN].top;
-    left := (buttons[BUTTON_SETTINGS].left + buttons[BUTTON_SETTINGS].width + 10);
+    width := buttons[BUTTON_SETTINGS].width;
+    top := buttons[BUTTON_SETTINGS].top;
+    left := (parent.width - (width + 7));
     hint := 'Takes you to the player setup page';
-    caption := 'Player Setup';
+    caption := '     Player Setup >>';
   end;
 
   for i := 0 to high(panels) do
@@ -485,13 +477,40 @@ begin
       width := forms[FORM_MAIN].width;
       panels[i].bevelWidth := 0;
       visible := false;
+      color := COLOR_BACKGROUND;
     end;
   end;
-  panels[PANEL_MAIN].visible := true;
-  panels[PANEL_MAIN].color := clRed;
-  panels[PANEL_SETTINGS].color := clBlue;
-  panels[PANEL_PLAYER].color := clGreen;
 
+  with panels[PANEL_MAIN] do
+  begin
+    visible := true;
+    top := 0;
+    height := parent.height;
+  end;
+
+  (**
+   *  START MAIN/INTRO PANEL
+   *
+   *)
+  buttons[BUTTON_CONTINUE] := TButton.create(forms[FORM_MAIN]);
+  with buttons[BUTTON_CONTINUE] do
+  begin
+    parent := panels[PANEL_MAIN];
+    caption := 'Continue >>';
+    width := 100;
+    top := (parent.height - 55);
+    left := (parent.width - (width + 10));
+    hint := 'Click to continue to setup MSI';
+  end;
+  (**
+   *  END MAIN/INTRO PANEL
+   *
+   *)
+
+  (**
+   *  START OF PLAYER SETUP PANEL
+   *
+   *)
   lists[LIST_PLAYERS] := TListBox.create(forms[FORM_MAIN]);
   with lists[LIST_PLAYERS] do
   begin
@@ -724,6 +743,10 @@ begin
     top := (panels[PANEL_PLAYER].height - 25 - labels[LABEL_REQUIRED].height);
     left := (panels[PANEL_PLAYER].width - 35 - labels[LABEL_REQUIRED].width);
   end;
+  (**
+   *  END OF PLAYER SETUP PANEL
+   *
+   *)
 
   (**
    * ADVANCED PLAYER SETTINGS COMPONENTS
@@ -924,12 +947,19 @@ begin
     begin
       borderStyle := bsSingle;
       position := poScreenCenter;
+      color := COLOR_BACKGROUND;
     end;
 
   for i := 0 to high(lists) do
     with lists[i] do
     begin
       showHint := true;
+    end;
+
+  for i := 0 to high(labels) do
+    with labels[i] do
+    begin
+      font.color := COLOR_FONT;
     end;
 
   for i := 0 to high(edits) do
