@@ -8,7 +8,7 @@ const
   HEIGHT_TEXT_COMPONENTS = 20;
   CENTER_LABELS          = 3; // Pixels needed to centre labels in components
 
-  COLOR_BACKGROUND       = 2765111;
+  COLOR_BACKGROUND       = 1909544;
   COLOR_FONT             = 2070783;
 
 // Component constants
@@ -79,7 +79,7 @@ const
     BUTTON_SCRIPT_LIST_ADD    = 10;
     BUTTON_SCRIPT_LIST_CANCEL = 11;
 
-  LABEL_COUNT = 16;
+  LABEL_COUNT = 17;
     LABEL_REQUIRED     = 0;
     LABEL_PLAYERS      = 1;
     LABEL_SCRIPTS      = 2;
@@ -96,6 +96,7 @@ const
     LABEL_BREAK_FOR    = 13;
     LABEL_LAMPSKILL    = 14;
     LABEL_REWARDS      = 15;
+    LABEL_TITLE        = 16;
 
 // Other variables
 var
@@ -222,7 +223,7 @@ var
   mainMenuNames: array[0..(MENU_COUNT - 1)] of TStringArray;
 begin
   // The first one ('File') is the heading, the rest are sub-options
-  mainMenuNames[MENU_FILE] := ['File', 'New', 'Load', 'Save', 'Close'];
+  mainMenuNames[MENU_FILE] := ['File', 'Clear', 'Load', 'Save', 'Close'];
   mainMenuNames[MENU_START] := ['Start', 'Show Logo', 'Run'];
   mainMenuNames[MENU_HELP] := ['Help', 'SRL-Forums', 'MSI Help', 'Documentation', 'What is MSI?'];
 
@@ -380,6 +381,8 @@ begin
 
         panels[PANEL_MAIN].visible := false;
         panels[PANEL_SETTINGS].visible := true;
+
+        labels[LABEL_TITLE].caption := 'Script Settings';
       end;
 
     buttons[BUTTON_SETTINGS]:
@@ -389,6 +392,8 @@ begin
 
         panels[PANEL_PLAYER].visible := false;
         panels[PANEL_SETTINGS].visible := true;
+
+        labels[LABEL_TITLE].caption := 'Script Settings';
       end;
 
     buttons[BUTTON_PLAYER]:
@@ -398,6 +403,8 @@ begin
 
         panels[PANEL_PLAYER].visible := true;
         panels[PANEL_SETTINGS].visible := false;
+
+        labels[LABEL_TITLE].caption := 'Player Settings';
       end;
 
     buttons[BUTTON_PLAYER_CANCEL]:
@@ -415,6 +422,7 @@ procedure formInit();
 var
   currentLeft, i: integer;
   s: TStringArray;
+  f: TFont;
 begin
   forms[FORM_MAIN] := TForm.create(nil);
   with forms[FORM_MAIN] do
@@ -452,6 +460,16 @@ begin
     left := 7;
     hint := 'Takes you to the script settings page';
     caption := '<< Script Settings     ';
+  end;
+
+  labels[LABEL_TITLE] := TLabel.create(forms[FORM_MAIN]);
+  with labels[LABEL_TITLE] do
+  begin
+    parent := forms[FORM_MAIN];
+    top := 2;
+    left := (buttons[BUTTON_SETTINGS].left + buttons[BUTTON_SETTINGS].width + 95);
+    font.height := 35;
+    font.style := [fsItalic];
   end;
 
   buttons[BUTTON_PLAYER] := TButton.create(forms[FORM_MAIN]);
@@ -686,7 +704,7 @@ begin
     width := lists[LIST_PLAYERS].width;
     height := lists[LIST_PLAYERS].height;
     left := (lists[LIST_PLAYERS].left + lists[LIST_PLAYERS].width + PLAYER_COMPONENT_LEFT + PLAYER_SPACING + 100);
-    hint := 'A list of all the selected player''s scripts';
+    hint := 'A list of all the selected player''s scripts. Double click to open advanced settings.';
   end;
 
   currentLeft := (lists[LIST_PLAYER_SCRIPTS].left + lists[LIST_PLAYER_SCRIPTS].width + PLAYER_COMPONENT_LEFT);
