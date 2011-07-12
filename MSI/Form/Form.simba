@@ -19,7 +19,7 @@ const
     FORM_SCRIPT_SETUP    = 2;
     FORM_SCRIPT_LIST     = 3;
 
-  MENU_COUNT = 3;
+  MENU_COUNT = 4;
     MENU_FILE = 0;
       ITEM_NEW   = 1;
       ITEM_LOAD  = 2;
@@ -30,7 +30,13 @@ const
       ITEM_MAIN = 1;
       ITEM_RUN  = 2;
 
-    MENU_HELP = 2;
+    MENU_FEEDBACK = 2;
+      ITEM_BUG        = 1;
+      ITEM_SUGGESTION = 2;
+      ITEM_REPORTS    = 3;
+      ITEM_CONTRIBUTE = 4;
+
+    MENU_HELP = 3;
       ITEM_FORUM = 1;
       ITEM_HELP  = 2;
       ITEM_DOC   = 3;
@@ -195,6 +201,18 @@ begin
         forms[FORM_MAIN].modalResult := mrOk;
       end;
 
+    mainMenuItems[MENU_FEEDBACK][ITEM_BUG]:
+      openWebPage('http://villavu.com/forum/forumdisplay.php?f=412');
+
+    mainMenuItems[MENU_FEEDBACK][ITEM_SUGGESTION]:
+      openWebPage('http://villavu.com/forum/forumdisplay.php?f=413');
+
+    mainMenuItems[MENU_FEEDBACK][ITEM_REPORTS]:
+      openWebPage('http://villavu.com/forum/showthread.php?t=56134');
+
+    mainMenuItems[MENU_FEEDBACK][ITEM_CONTRIBUTE]:
+      openWebPage('http://villavu.com/forum/showthread.php?t=56179');
+
     mainMenuItems[MENU_START][ITEM_MAIN]:
       begin
         panels[PANEL_PLAYER].visible := false;
@@ -225,6 +243,7 @@ begin
   // The first one ('File') is the heading, the rest are sub-options
   mainMenuNames[MENU_FILE] := ['File', 'Clear', 'Load', 'Save', 'Close'];
   mainMenuNames[MENU_START] := ['Start', 'Show Logo', 'Run'];
+  mainMenuNames[MENU_FEEDBACK] := ['Feedback', 'Report a bug', 'Suggest a feature', 'Progress Reports', 'Want to contribute?'];
   mainMenuNames[MENU_HELP] := ['Help', 'SRL-Forums', 'MSI Help', 'Documentation', 'What is MSI?'];
 
   mainMenu := TMainMenu.create(forms[FORM_MAIN]);
@@ -418,6 +437,51 @@ begin
   end;
 end;
 
+procedure onEnters(sender: TObject);
+begin
+  case sender of
+    edits[EDIT_TIME_BREAK]:
+      edits[EDIT_TIME_BREAK].clear;
+
+    edits[EDIT_TIME_TOTAL]:
+      edits[EDIT_TIME_TOTAL].clear;
+
+    edits[EDIT_LOADS_TOTAL]:
+      edits[EDIT_LOADS_TOTAL].clear;
+
+    edits[EDIT_BREAK_FOR]:
+      edits[EDIT_BREAK_FOR].clear;
+
+    edits[EDIT_LOADS_BREAK]:
+      edits[EDIT_LOADS_BREAK].clear;
+  end;
+end;
+
+procedure onExits(sender: TObject);
+begin
+  case sender of
+    edits[EDIT_TIME_BREAK]:
+      if (edits[EDIT_TIME_BREAK].text = '') then
+        edits[EDIT_TIME_BREAK].text := 'minutes';
+
+    edits[EDIT_TIME_TOTAL]:
+      if (edits[EDIT_TIME_TOTAL].text = '') then
+        edits[EDIT_TIME_TOTAL].text := 'minutes';
+
+    edits[EDIT_LOADS_TOTAL]:
+      if (edits[EDIT_LOADS_TOTAL].text = '') then
+        edits[EDIT_LOADS_TOTAL].text := 'loads';
+
+    edits[EDIT_BREAK_FOR]:
+      if (edits[EDIT_BREAK_FOR].text = '') then
+        edits[EDIT_BREAK_FOR].text := 'minutes';
+
+    edits[EDIT_LOADS_BREAK]:
+      if (edits[EDIT_LOADS_BREAK].text = '') then
+        edits[EDIT_LOADS_BREAK].text := 'loads';
+  end;
+end;
+
 procedure formInit();
 var
   currentLeft, i: integer;
@@ -540,7 +604,7 @@ begin
     height := (panels[PANEL_PLAYER].height - lists[LIST_PLAYERS].top - 30);
     for i := 1 to 10 do
       items.add(intToStr(i));
-    OnDblClick := @onDblClicks;
+    onDblClick := @onDblClicks;
     onClick := @onClicks;
   end;
 
@@ -775,7 +839,7 @@ begin
   with forms[FORM_SETTINGS_PLAYER] do
   begin
     width := 475;
-    height := 225;
+    height := 235;
     visible := false;
   end;
 
@@ -786,8 +850,9 @@ begin
     top := 10;
     left := 145;
     hint := 'The total time for this player to run in minutes (combines '+#13+#10+
-            'the time from each script).  Leave at 0 to run forever.';
-    text := '0';
+            'the time from each script).  Leave as is to run forever.';
+    text := 'minutes';
+    font.style := [fsItalic];
   end;
 
   edits[EDIT_TIME_BREAK] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -797,8 +862,9 @@ begin
     top := (edits[EDIT_TIME_TOTAL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;
     hint := 'The time to run before breaking or switching players.  '+#13+#10+
-            'Leave at 0 if you don''t want this player take breaks.';
-    text := '0';
+            'Leave as is if you don''t want this player take breaks.';
+    text := 'minutes';
+    font.style := edits[EDIT_TIME_TOTAL].font.Style;
   end;
 
   edits[EDIT_LOADS_TOTAL] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -808,8 +874,9 @@ begin
     top := (edits[EDIT_TIME_BREAK].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;;
     hint := 'The total loads for this player to do (combines the '+#13+#10+
-            'loads from each script).  Leave at 0 to run forever.';
-    text := '0';
+            'loads from each script).  Leave as is to run forever.';
+    text := 'loads';
+    font.style := edits[EDIT_TIME_TOTAL].font.Style;
   end;
 
   edits[EDIT_LOADS_BREAK] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -819,8 +886,9 @@ begin
     top := (edits[EDIT_LOADS_TOTAL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;;
     hint := 'The loads to do before breaking or switching players.  '+#13+#10+
-            'Leave at 0 if you don''t want to take breaks.';
-    text := '0';
+            'Leave as is if you don''t want to take breaks.';
+    text := 'loads';
+    font.style := edits[EDIT_TIME_TOTAL].font.Style;
   end;
 
   edits[EDIT_BREAK_FOR] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -831,7 +899,8 @@ begin
     left := edits[EDIT_TIME_TOTAL].left;;
     hint := 'How long for this player to break for (in minutes) if taking breaks.  ' +#13+#10+
             'This is only used for single player or if there''s one player active';
-    text := '15';
+    text := 'minutes';
+    font.style := edits[EDIT_TIME_TOTAL].font.Style;
   end;
 
   comboBoxes[COMBO_LAMPSKILL] := TComboBox.create(forms[FORM_SETTINGS_PLAYER]);
@@ -843,39 +912,34 @@ begin
     hint := 'Choose the skill you want to gain from experience lamps';
     text := 'Mining';
 
-    s := ['Attack', 'Defence', 'Strength', 'Hitpoints', 'Range', 'Prayer',
-          'Magic', 'Cooking', 'Woodcutting', 'Fletching', 'Fishing',
-          'Firemaking', 'Crafting', 'Smithing', 'Mining', 'Herblore',
-          'Agility', 'Thieving', 'Slayer', 'Farming', 'Runecrafting',
-          'Hunter', 'Construction', 'Summoning', 'Dungeoneering'];
-    for i := 0 to high(s) do
-      items.add(s[i]);
+    for i := 0 to (SKILL_COUNT - 2) do
+      items.add(lowercase(skillToStr(i)));
+  end;
+
+  labels[LABEL_TIME_TOTAL] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
+  with labels[LABEL_TIME_TOTAL] do
+  begin
+    parent := edits[EDIT_TIME_TOTAL].parent;
+    caption := 'Total time';
+    top := (edits[EDIT_TIME_TOTAL].top + CENTER_LABELS);
+    left := (edits[EDIT_TIME_TOTAL].left - 90);
   end;
 
   labels[LABEL_TIME_BREAK] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
   with labels[LABEL_TIME_BREAK] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Break Time';
+    caption := 'Break after';
     top := (edits[EDIT_TIME_BREAK].top + CENTER_LABELS);
-    left := (edits[EDIT_TIME_TOTAL].left - 90);
+    left := labels[LABEL_TIME_TOTAL].left;
   end;
 
   labels[LABEL_LOADS_TOTAL] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
   with labels[LABEL_LOADS_TOTAL] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Total Loads';
+    caption := 'Total loads';
     top := (edits[EDIT_LOADS_TOTAL].top + CENTER_LABELS);
-    left := labels[LABEL_TIME_BREAK].left;
-  end;
-
-  labels[LABEL_BREAK_FOR] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
-  with labels[LABEL_BREAK_FOR] do
-  begin
-    parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Break For';
-    top := (edits[EDIT_BREAK_FOR].top + CENTER_LABELS);
     left := labels[LABEL_TIME_BREAK].left;
   end;
 
@@ -883,17 +947,17 @@ begin
   with labels[LABEL_LOADS_BREAK] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Break Loads';
+    caption := 'Break after';
     top := (edits[EDIT_LOADS_BREAK].top + CENTER_LABELS);
     left := labels[LABEL_TIME_BREAK].left;
   end;
 
-  labels[LABEL_TIME_TOTAL] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
-  with labels[LABEL_TIME_TOTAL] do
+  labels[LABEL_BREAK_FOR] := TLabel.create(forms[FORM_SETTINGS_PLAYER]);
+  with labels[LABEL_BREAK_FOR] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Total Time';
-    top := (edits[EDIT_TIME_TOTAL].top + CENTER_LABELS);
+    caption := 'Break for';
+    top := (edits[EDIT_BREAK_FOR].top + CENTER_LABELS);
     left := labels[LABEL_TIME_BREAK].left;
   end;
 
@@ -901,7 +965,7 @@ begin
   with labels[LABEL_LAMPSKILL] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Lamp Skill';
+    caption := 'Lamp skill';
     top := (comboBoxes[COMBO_LAMPSKILL].top + CENTER_LABELS);
     left := labels[LABEL_TIME_BREAK].left;
   end;
@@ -910,9 +974,9 @@ begin
   with labels[LABEL_REWARDS] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Reward Box Rewards';
+    caption := 'Reward box rewards';
     top := edits[EDIT_TIME_TOTAL].top;
-    left := (edits[EDIT_TIME_BREAK].left + edits[EDIT_TIME_BREAK].width + 30);
+    left := (edits[EDIT_TIME_BREAK].left + edits[EDIT_TIME_BREAK].width + 40);
   end;
 
   checkLists[CHECKLIST_REWARDS] := TCheckListBox.create(forms[FORM_SETTINGS_PLAYER]);
@@ -938,7 +1002,7 @@ begin
     caption := 'Save';
     hint := 'Save the player''s settings';
     width := 100;
-    top := (comboBoxes[COMBO_LAMPSKILL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
+    top := (comboBoxes[COMBO_LAMPSKILL].top + HEIGHT_TEXT_COMPONENTS + 20);
     left := 125;
   end;
 
@@ -986,6 +1050,8 @@ begin
       height := HEIGHT_TEXT_COMPONENTS;
       width := 100;
       showHint := true;
+      onEnter := @onEnters;
+      onExit := @onExits;
     end;
 
   for i := 0 to high(comboBoxes) do
