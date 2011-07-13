@@ -313,6 +313,8 @@ begin
     parent := forms[FORM_SCRIPT_LIST];
     setBounds(0, 0, forms[FORM_SCRIPT_LIST].width, forms[FORM_SCRIPT_LIST].height - 40);
     hint := 'Select which script you want to add';
+    color := COLOR_BACKGROUND;
+    font.color := COLOR_FONT;
     columns := 2;
     onDblClick := @scriptListClicks;
   end;
@@ -434,51 +436,6 @@ begin
 
     buttons[BUTTON_SCRIPT_SETTINGS]:
       forms[FORM_SCRIPT_SETUP].visible := true;
-  end;
-end;
-
-procedure onEnters(sender: TObject);
-begin
-  case sender of
-    edits[EDIT_TIME_BREAK]:
-      edits[EDIT_TIME_BREAK].clear;
-
-    edits[EDIT_TIME_TOTAL]:
-      edits[EDIT_TIME_TOTAL].clear;
-
-    edits[EDIT_LOADS_TOTAL]:
-      edits[EDIT_LOADS_TOTAL].clear;
-
-    edits[EDIT_BREAK_FOR]:
-      edits[EDIT_BREAK_FOR].clear;
-
-    edits[EDIT_LOADS_BREAK]:
-      edits[EDIT_LOADS_BREAK].clear;
-  end;
-end;
-
-procedure onExits(sender: TObject);
-begin
-  case sender of
-    edits[EDIT_TIME_BREAK]:
-      if (edits[EDIT_TIME_BREAK].text = '') then
-        edits[EDIT_TIME_BREAK].text := 'minutes';
-
-    edits[EDIT_TIME_TOTAL]:
-      if (edits[EDIT_TIME_TOTAL].text = '') then
-        edits[EDIT_TIME_TOTAL].text := 'minutes';
-
-    edits[EDIT_LOADS_TOTAL]:
-      if (edits[EDIT_LOADS_TOTAL].text = '') then
-        edits[EDIT_LOADS_TOTAL].text := 'loads';
-
-    edits[EDIT_BREAK_FOR]:
-      if (edits[EDIT_BREAK_FOR].text = '') then
-        edits[EDIT_BREAK_FOR].text := 'minutes';
-
-    edits[EDIT_LOADS_BREAK]:
-      if (edits[EDIT_LOADS_BREAK].text = '') then
-        edits[EDIT_LOADS_BREAK].text := 'loads';
   end;
 end;
 
@@ -850,9 +807,8 @@ begin
     top := 10;
     left := 145;
     hint := 'The total time for this player to run in minutes (combines '+#13+#10+
-            'the time from each script).  Leave as is to run forever.';
-    text := 'minutes';
-    font.style := [fsItalic];
+            'the time from each script).  Leave at 0 to run forever.';
+    text := '0';
   end;
 
   edits[EDIT_TIME_BREAK] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -862,9 +818,8 @@ begin
     top := (edits[EDIT_TIME_TOTAL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;
     hint := 'The time to run before breaking or switching players.  '+#13+#10+
-            'Leave as is if you don''t want this player take breaks.';
-    text := 'minutes';
-    font.style := edits[EDIT_TIME_TOTAL].font.Style;
+            'Leave at 0 if you don''t want this player take breaks.';
+    text := '0';
   end;
 
   edits[EDIT_LOADS_TOTAL] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -874,9 +829,8 @@ begin
     top := (edits[EDIT_TIME_BREAK].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;;
     hint := 'The total loads for this player to do (combines the '+#13+#10+
-            'loads from each script).  Leave as is to run forever.';
-    text := 'loads';
-    font.style := edits[EDIT_TIME_TOTAL].font.Style;
+            'loads from each script).  Leave at 0 to run forever.';
+    text := '0';
   end;
 
   edits[EDIT_LOADS_BREAK] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -886,9 +840,8 @@ begin
     top := (edits[EDIT_LOADS_TOTAL].top + HEIGHT_TEXT_COMPONENTS + PLAYER_SPACING);
     left := edits[EDIT_TIME_TOTAL].left;;
     hint := 'The loads to do before breaking or switching players.  '+#13+#10+
-            'Leave as is if you don''t want to take breaks.';
-    text := 'loads';
-    font.style := edits[EDIT_TIME_TOTAL].font.Style;
+            'Leave at 0 if you don''t want to take breaks.';
+    text := '0';
   end;
 
   edits[EDIT_BREAK_FOR] := TEdit.create(forms[FORM_SETTINGS_PLAYER]);
@@ -899,8 +852,7 @@ begin
     left := edits[EDIT_TIME_TOTAL].left;;
     hint := 'How long for this player to break for (in minutes) if taking breaks.  ' +#13+#10+
             'This is only used for single player or if there''s one player active';
-    text := 'minutes';
-    font.style := edits[EDIT_TIME_TOTAL].font.Style;
+    text := '60';
   end;
 
   comboBoxes[COMBO_LAMPSKILL] := TComboBox.create(forms[FORM_SETTINGS_PLAYER]);
@@ -929,7 +881,7 @@ begin
   with labels[LABEL_TIME_BREAK] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Break after';
+    caption := 'Break time';
     top := (edits[EDIT_TIME_BREAK].top + CENTER_LABELS);
     left := labels[LABEL_TIME_TOTAL].left;
   end;
@@ -947,7 +899,7 @@ begin
   with labels[LABEL_LOADS_BREAK] do
   begin
     parent := edits[EDIT_TIME_TOTAL].parent;
-    caption := 'Break after';
+    caption := 'Break loads';
     top := (edits[EDIT_LOADS_BREAK].top + CENTER_LABELS);
     left := labels[LABEL_TIME_BREAK].left;
   end;
@@ -1050,8 +1002,6 @@ begin
       height := HEIGHT_TEXT_COMPONENTS;
       width := 100;
       showHint := true;
-      onEnter := @onEnters;
-      onExit := @onExits;
     end;
 
   for i := 0 to high(comboBoxes) do
