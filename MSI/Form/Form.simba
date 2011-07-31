@@ -167,6 +167,35 @@ begin
   end;
 end;
 
+type
+  TSkillForm = record
+    name: integer;
+    numberOfLists, numberOfEdits, numberOfCombos: integer;
+    labelsLists, labelsEdits, labelsCombos: TStringArray;
+    skillLists: array of TCheckListBox;
+    skillEdits: array of TEdit;
+    skillCombos: array of TComboBox;
+  end;
+
+function getSkillForm(skill: integer): TSkillForm;
+begin
+  case skill of
+    SKILL_WOODCUTTING: ;
+    SKILL_MINING: ;
+    SKILL_FISHING: ;
+    SKILL_COOKING: ;
+    SKILL_MAGIC: ;
+    SKILL_NONE: ;
+
+    else
+      MSI_SubDebug('[FORM] Invalid skill in getSkillForm');
+  end;
+end;
+
+procedure createSkillForm(skill: integer);
+begin
+end;
+
 procedure mainMenuClicks(sender: TObject);
 begin
   case sender of
