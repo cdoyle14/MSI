@@ -71,7 +71,7 @@ const
     COMBO_MEMBER    = 1;
     COMBO_LAMPSKILL = 2;
 
-  BUTTON_COUNT = 12;
+  BUTTON_COUNT = 13;
     BUTTON_CONTINUE           = 0;
     BUTTON_SETTINGS           = 1;
     BUTTON_PLAYER             = 2;
@@ -84,6 +84,7 @@ const
     BUTTON_SCRIPT_SETTINGS    = 9;
     BUTTON_SCRIPT_LIST_ADD    = 10;
     BUTTON_SCRIPT_LIST_CANCEL = 11;
+    BUTTON_ADVANCED_PLAYER    = 12;
 
   LABEL_COUNT = 17;
     LABEL_REQUIRED     = 0;
@@ -404,7 +405,7 @@ var
   i: integer;
 begin
   case sender of
-    lists[LIST_PLAYERS]:
+    lists[LIST_PLAYERS], buttons[BUTTON_ADVANCED_PLAYER]:
       begin
         i := getListSelected(lists[LIST_PLAYERS]);
         forms[FORM_SETTINGS_PLAYER].caption := lists[LIST_PLAYERS].items.Strings[i] + '''s Advanced Settings (optional)';
@@ -422,6 +423,7 @@ begin
       begin
         i := getListSelected(lists[LIST_PLAYERS]);
         labels[LABEL_SCRIPTS].caption := lists[LIST_PLAYERS].items.strings[i] + '''s Scripts';
+        buttons[BUTTON_ADVANCED_PLAYER].enabled := true;
       end;
 
     buttons[BUTTON_CONTINUE]:
@@ -468,98 +470,8 @@ begin
   end;
 end;
 
-procedure formInit();
-var
-  currentLeft, i: integer;
-  s: TStringArray;
-  f: TFont;
+procedure initIntro();
 begin
-  forms[FORM_MAIN] := TForm.create(nil);
-  with forms[FORM_MAIN] do
-  begin
-    width := 670;
-    height := 300;
-    caption := 'MSI Phoenix ~ Multiple Script Integration @ SRL-Forums';
-  end;
-
-  forms[FORM_SCRIPT_SETUP] := TForm.create(forms[FORM_MAIN]);
-  with forms[FORM_SCRIPT_SETUP] do
-  begin
-    width := 300;
-    height := 500;
-    caption := 'Script Settings';
-    visible := false;
-  end;
-
-  mainMenuCreate();
-  scriptListCreate();
-
-  openDialog := TOpenDialog.create(forms[FORM_MAIN]);
-  openDialog.title := 'Choose a player file to open';
-
-  saveDialog := TSaveDialog.create(forms[FORM_MAIN]);
-  saveDialog.title := 'Save your player file';
-  saveDialog.defaultExt := '.txt';
-
-  buttons[BUTTON_SETTINGS] := TButton.create(forms[FORM_MAIN]);
-  with buttons[BUTTON_SETTINGS] do
-  begin
-    parent := forms[FORM_MAIN];
-    width := 150;
-    top := 7;
-    left := 7;
-    hint := 'Takes you to the script settings page';
-    caption := '<< Script Settings     ';
-  end;
-
-  labels[LABEL_TITLE] := TLabel.create(forms[FORM_MAIN]);
-  with labels[LABEL_TITLE] do
-  begin
-    parent := forms[FORM_MAIN];
-    top := 2;
-    left := (buttons[BUTTON_SETTINGS].left + buttons[BUTTON_SETTINGS].width + 95);
-    font.height := 35;
-    font.style := [fsItalic];
-  end;
-
-  buttons[BUTTON_PLAYER] := TButton.create(forms[FORM_MAIN]);
-  with buttons[BUTTON_PLAYER] do
-  begin
-    parent := forms[FORM_MAIN];
-    width := buttons[BUTTON_SETTINGS].width;
-    top := buttons[BUTTON_SETTINGS].top;
-    left := (parent.width - (width + 7));
-    hint := 'Takes you to the player setup page';
-    caption := '     Player Setup >>';
-  end;
-
-  for i := 0 to high(panels) do
-  begin
-    panels[i] := TPanel.create(forms[FORM_MAIN]);
-    with panels[i] do
-    begin
-      parent := forms[FORM_MAIN];
-      left := 0;
-      top := 40;
-      height := (forms[FORM_MAIN].height - top);
-      width := forms[FORM_MAIN].width;
-      panels[i].bevelWidth := 0;
-      visible := false;
-      color := COLOR_BACKGROUND;
-    end;
-  end;
-
-  with panels[PANEL_MAIN] do
-  begin
-    visible := true;
-    top := 0;
-    height := parent.height;
-  end;
-
-  (**
-   *  START MAIN/INTRO PANEL
-   *
-   *)
   buttons[BUTTON_CONTINUE] := TButton.create(forms[FORM_MAIN]);
   with buttons[BUTTON_CONTINUE] do
   begin
@@ -570,15 +482,13 @@ begin
     left := (parent.width - (width + 10));
     hint := 'Click to continue to setup MSI';
   end;
-  (**
-   *  END MAIN/INTRO PANEL
-   *
-   *)
+end;
 
-  (**
-   *  START OF PLAYER SETUP PANEL
-   *
-   *)
+procedure initPlayerSetup();
+var
+  currentLeft, i: integer;
+  s: TStringArray;
+begin
   lists[LIST_PLAYERS] := TListBox.create(forms[FORM_MAIN]);
   with lists[LIST_PLAYERS] do
   begin
@@ -587,11 +497,25 @@ begin
     width := PLAYER_LIST_WIDTH;
     left := 10;
     hint := 'A list of all your players.  Double click to open advanded settings.';
-    height := (panels[PANEL_PLAYER].height - lists[LIST_PLAYERS].top - 30);
+    height := (panels[PANEL_PLAYER].height - lists[LIST_PLAYERS].top - 65);
     for i := 1 to 10 do
       items.add(intToStr(i));
     onDblClick := @onDblClicks;
     onClick := @onClicks;
+  end;
+
+  buttons[BUTTON_ADVANCED_PLAYER] := TButton.create(forms[FORM_MAIN]);
+  with buttons[BUTTON_ADVANCED_PLAYER] do
+  begin
+    parent := lists[LIST_PLAYERS].parent;
+    width := lists[LIST_PLAYERS].width;
+    top := (lists[LIST_PLAYERS].top + lists[LIST_PLAYERS].height + PLAYER_SPACING);
+    left := lists[LIST_PLAYERS].left;
+    hint := 'Opens an advanced settings window for the selected player';
+    caption := 'Advanced Player Settings';
+    font.size := 8;
+    enabled := false;
+    onClick := @onDblClicks;
   end;
 
   labels[LABEL_PLAYERS] := TLabel.create(forms[FORM_MAIN]);
@@ -729,7 +653,7 @@ begin
   begin
     parent := lists[LIST_PLAYERS].parent;
     width := 90;
-    top := (panels[PANEL_PLAYER].height - 55);
+    top := (buttons[BUTTON_ADVANCED_PLAYER].top);
     left := (labels[LABEL_USERNAME].left);
     hint := 'Adds the player with the current settings to the Player List';
     caption := 'Add Player';
@@ -752,7 +676,7 @@ begin
     parent := lists[LIST_PLAYERS].parent;
     top := lists[LIST_PLAYERS].top;
     width := lists[LIST_PLAYERS].width;
-    height := lists[LIST_PLAYERS].height;
+    height := (panels[PANEL_PLAYER].height - top - 30);
     left := (lists[LIST_PLAYERS].left + lists[LIST_PLAYERS].width + PLAYER_COMPONENT_LEFT + PLAYER_SPACING + 100);
     hint := 'A list of all the selected player''s scripts. Double click to open advanced settings.';
   end;
@@ -811,10 +735,6 @@ begin
     top := (panels[PANEL_PLAYER].height - 25 - labels[LABEL_REQUIRED].height);
     left := (panels[PANEL_PLAYER].width - 35 - labels[LABEL_REQUIRED].width);
   end;
-  (**
-   *  END OF PLAYER SETUP PANEL
-   *
-   *)
 
   (**
    * ADVANCED PLAYER SETTINGS COMPONENTS
@@ -1003,6 +923,97 @@ begin
    *
    * END OF ADVANCED PLAYER SETTINGS COMPONENTS
    *)
+end;
+
+procedure formInit();
+var
+  i: integer;
+
+begin
+  forms[FORM_MAIN] := TForm.create(nil);
+  with forms[FORM_MAIN] do
+  begin
+    width := 670;
+    height := 300;
+    caption := 'MSI Phoenix ~ Multiple Script Integration @ SRL-Forums';
+  end;
+
+  forms[FORM_SCRIPT_SETUP] := TForm.create(forms[FORM_MAIN]);
+  with forms[FORM_SCRIPT_SETUP] do
+  begin
+    width := 300;
+    height := 500;
+    caption := 'Script Settings';
+    visible := false;
+  end;
+
+  mainMenuCreate();
+  scriptListCreate();
+
+  openDialog := TOpenDialog.create(forms[FORM_MAIN]);
+  openDialog.title := 'Choose a player file to open';
+
+  saveDialog := TSaveDialog.create(forms[FORM_MAIN]);
+  saveDialog.title := 'Save your player file';
+  saveDialog.defaultExt := '.txt';
+
+  buttons[BUTTON_SETTINGS] := TButton.create(forms[FORM_MAIN]);
+  with buttons[BUTTON_SETTINGS] do
+  begin
+    parent := forms[FORM_MAIN];
+    width := 150;
+    top := 7;
+    left := 7;
+    hint := 'Takes you to the script settings page';
+    caption := '<< Script Settings     ';
+  end;
+
+  labels[LABEL_TITLE] := TLabel.create(forms[FORM_MAIN]);
+  with labels[LABEL_TITLE] do
+  begin
+    parent := forms[FORM_MAIN];
+    top := 2;
+    left := (buttons[BUTTON_SETTINGS].left + buttons[BUTTON_SETTINGS].width + 95);
+    font.height := 35;
+    font.style := [fsItalic];
+  end;
+
+  buttons[BUTTON_PLAYER] := TButton.create(forms[FORM_MAIN]);
+  with buttons[BUTTON_PLAYER] do
+  begin
+    parent := forms[FORM_MAIN];
+    width := buttons[BUTTON_SETTINGS].width;
+    top := buttons[BUTTON_SETTINGS].top;
+    left := (parent.width - (width + 7));
+    hint := 'Takes you to the player setup page';
+    caption := '     Player Setup >>';
+  end;
+
+  for i := 0 to high(panels) do
+  begin
+    panels[i] := TPanel.create(forms[FORM_MAIN]);
+    with panels[i] do
+    begin
+      parent := forms[FORM_MAIN];
+      left := 0;
+      top := 40;
+      height := (forms[FORM_MAIN].height - top);
+      width := forms[FORM_MAIN].width;
+      panels[i].bevelWidth := 0;
+      visible := false;
+      color := COLOR_BACKGROUND;
+    end;
+  end;
+
+  with panels[PANEL_MAIN] do
+  begin
+    visible := true;
+    top := 0;
+    height := parent.height;
+  end;
+
+  initIntro();
+  initPlayerSetup();
 
   // Set the common attributes for all forms/components
   for i := 0 to high(forms) do
@@ -1050,7 +1061,7 @@ begin
         onClick := @onClicks;
     end;
 
-  forms[FORM_MAIN].ShowModal;
+  forms[FORM_MAIN].showModal;
 end;
 
 procedure formSafeCall(proc: string);
