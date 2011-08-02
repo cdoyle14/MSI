@@ -50,7 +50,7 @@ begin
     for i := 0 to High(Scripts) do
     begin
       {$IFDEF REFLECTION}
-      if (not ReflectionBroken) then
+      if (not MSI_HookBroken[HOOK_LEVEL_SKILL]) then
         curLev := R_GetSkillLevel(MSI_Scripts[Scripts[i].Name].SkillName)
       else
         curLev := GetSkillLevel(MSI_Scripts[Scripts[i].Name].SkillName);
@@ -346,7 +346,7 @@ Repeats the function 'Func' until the inventory is full.
 .. note::
 
   | Author: Coh3n
-  | Last Updated: 20 September 2010 by Coh3n
+  | Last Updated: 22 June 2011 by Coh3n
 
 Example:
 
@@ -356,14 +356,15 @@ Example:
 *)
 function MSI_AutoInvFull(Func: function(a: TIntegerArray; var b: Boolean): Boolean): Boolean;
 var
-  t, waitTime, tTime: Integer;
+  t, waitTime, tTime, maxTime: Integer;
   tObjects, newObjects: TIntegerArray;
   forceFail: Boolean;
 begin
   if (not LoggedIn) then
     Exit;
 
-  t := (GetSystemTime + (30 * 60000)); // Maximum 30 minutes
+  maxTime := (getSystemTime + (45 * 60000)) // 45 minutes
+  t := maxTime;
 
   repeat
     while (not InvFull) and (LoggedIn) do
@@ -377,7 +378,6 @@ begin
             SKILL_WOODCUTTING: tObjects := Trees;
             SKILL_MINING: tObjects := Rocks;
             SKILL_FISHING: tObjects := FishSpots;
-            SKILL_COOKING: tObjects := CookingSpot;
           end;
 
         if (not MSI_Scripts[Scripts[CurrentScript].Name].ClickClosest) then
@@ -390,11 +390,18 @@ begin
 
         if (Func(newObjects, forceFail)) then
         begin
-          t := (GetSystemTime + (8 * 60000));
+          t := maxTime;
           waitTime := 0;
+          MSI_NotBoxes := [];
         end else begin
-          MSI_FindRandoms(False);
+          if (MSI_FindRandoms(False)) then
+          begin
+            t := maxTime;
+            continue;
+          end;
+
           MSI_Antiban(randomRange(1000, 4000), 50);
+          wait(randomRange(250, 500));
 
           if (forceFail) then
             Exit;

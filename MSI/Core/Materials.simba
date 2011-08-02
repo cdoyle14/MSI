@@ -226,6 +226,16 @@ begin
         Level       := 45;
       end;
 
+    MATERIAL_SHARK:
+      with Result do
+      begin
+        Name       := 'Shark';
+        Supplies   := [TIntegerArray([FISH_RAW_SHARK, -1])];
+        Produces   := [FISH_COOKED_SHARK];
+        MemberOnly := True;
+        Level      := 80;
+      end;
+
     MATERIAL_CLAY:
       with Result do
       begin
@@ -276,6 +286,8 @@ begin
         Level       := -1;
       end;
   end;
+
+  MSI_SubDebug('Loaded material: '+result.name);
 end;
 
 (*
@@ -309,7 +321,7 @@ Example:
 *)
 function MSI_ConvertMaterial(func: function(m: TMaterial): Boolean; objs: TIntegerArray): Boolean;
 var
-  i, t: Integer;
+  i, j, t: Integer;
   material: TMaterial;
 begin
   if (not LoggedIn) then
@@ -317,27 +329,33 @@ begin
 
   t := (GetSystemTime + (60000 * 3));
 
-  repeat
-    with MSI_Players[CurrentPlayer] do
-    begin
+  with MSI_Players[CurrentPlayer] do
+    repeat
       MSI_Relocate(Location);
 
-      for i := 0 to High(Scripts[CurrentScript].Materials) do
-      begin
-        material := MSI_GetMaterial(Scripts[CurrentScript].Materials[i]);
+      if (length(Scripts[CurrentScript].Materials) > 0) then
+        for i := 0 to High(Scripts[CurrentScript].Materials) do
+        begin
+          material := MSI_GetMaterial(Scripts[CurrentScript].Materials[i]);
 
-        if (MSI_UseItemOn(material.Supplies[0][0], objs)) then
-          if (func(material)) then
-            if (MSI_WaitItemGone(MSI_Items[material.Supplies[0][0]])) then
-            begin
-              Result := True;
-              MSI_AddToProggy(PROG_ADD_LOADS, -1, -1, -1);
-            end;
-      end;
+          if (not member) then
+            if (material.memberOnly) then
+              continue;
+
+          if (length(material.supplies) > 0) then
+            for j := 0 to high(material.supplies) do
+              if (MSI_UseItemOn(material.supplies[j][0], objs)) then
+                if (func(material)) then
+                  if (MSI_WaitItemGone(MSI_Items[material.supplies[j][0]])) then
+                  begin
+                    result := true;
+                    MSI_AddToProggy(PROG_ADD_LOADS, -1, -1, -1);
+                    exit;
+                  end;
+        end;
 
       if (GetSystemTime > (t div 3)) then
         MSI_NotBoxes := [];
-    end;
-  until(Result or (GetSystemTime > t));
+    until(Result or (GetSystemTime > t));
 end;
 

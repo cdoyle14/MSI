@@ -204,11 +204,11 @@ begin
     FISH_RAW_TROUT, FISH_COOKED_TROUT, FISH_RAW_PIKE, FISH_COOKED_PIKE,
     FISH_RAW_SALMON, FISH_COOKED_SALMON:
       Result := [
-                  Point(707, 351),
-                  Point(701, 359),
-                  Point(699, 349),
-                  Point(714, 342),
-                  Point(723, 342)
+                  Point(1191, 328),
+                  Point(1187, 334),
+                  Point(1187, 324),
+                  Point(1191, 321),
+                  Point(1200, 325)
                 ];
 
     FISH_RAW_TUNA, FISH_COOKED_TUNA:
@@ -240,6 +240,15 @@ begin
                   Point(22, 6),
                   Point(10, 19)
                 ];
+
+    FISH_RAW_SHARK, FISH_COOKED_SHARK:
+     Result := [
+                 Point(1108, 277),
+                 Point(1099, 284),
+                 Point(1102, 271),
+                 Point(1125, 272),
+                 Point(1121, 284)
+               ];
 
     GEM_UNCUT_SAPPHIRE..GEM_UNCUT_DIAMOND:
       Result := [
@@ -390,7 +399,7 @@ begin
     HATCHET_IRON   : Result := 3618618;
     HATCHET_STEEL  : Result := 5855581;
     HATCHET_MITHRIL: Result := 4599598;
-    HATCHET_ADAMANT: Result := 3291698;
+    HATCHET_ADAMANT: Result := 3489076;
     HATCHET_RUNE   : Result := 4932921;
     HATCHET_DRAGON : Result := 790869;
 
@@ -433,12 +442,13 @@ begin
     FISH_RAW_ANCHOVIE  : Result := 5986135;
     FISH_RAW_SARDINE   : Result := 9940887;
     FISH_RAW_HERRING   : Result := 10461094;
-    FISH_RAW_TROUT     : Result := 9934750;
+    FISH_RAW_TROUT     : Result := 11382453;
     FISH_RAW_PIKE      : Result := 6319968;
     FISH_RAW_SALMON    : Result := 5924258;
     FISH_RAW_TUNA      : Result := 9408662;
     FISH_RAW_LOBSTER   : Result := 2244720;
     FISH_RAW_SWORDFISH : Result := 12615862;
+    FISH_RAW_SHARK     : Result := 5132114;
 
     FISH_COOKED_SHRIMP    : Result := 1195905;
     FISH_COOKED_CRAYFISH  : Result := 1265804;
@@ -451,6 +461,7 @@ begin
     FISH_COOKED_TUNA      : Result := 5263965;
     FISH_COOKED_LOBSTER   : Result := 1728190;
     FISH_COOKED_SWORDFISH : Result := 9330310;
+    FISH_COOKED_SHARK     : Result := 5202296;
 
     GEM_UNCUT_SAPPHIRE : Result := 7279119;
     GEM_UNCUT_EMERALD  : Result := 1007117;
@@ -483,8 +494,8 @@ begin
     CLAY_SOFT   : Result := 802904;
     VIAL_EMPTY  : Result := 5920342;
     VIAL_WATER  : Result := 11040368;
-    JUG_EMPTY   : Result := 7500664;
-    JUG_WATER   : Result := 12216937;
+    JUG_EMPTY   : Result := 6710891;
+    JUG_WATER   : Result := 12085350;
     BOWL_EMPTY  : Result := 1203069;
     BOWL_WATER  : Result := 11712313;
     BUCKET_EMPTY: Result := 1521995;
@@ -1081,6 +1092,16 @@ begin
         EquipLevel := -1;
       end;
 
+    FISH_RAW_SHARK:
+      with MSI_Items[whichItem] do
+      begin
+        Name := 'Raw Shark';
+        StatsName := 'Shark Caught';
+        UpText := ['aw shark'];
+        Stackable := False;
+        EquipLevel := -1;
+      end;
+
     FISH_COOKED_SHRIMP:
       with MSI_Items[whichItem] do
       begin
@@ -1187,6 +1208,16 @@ begin
         Name := 'Cooked swordfish';
         StatsName := 'Swordfish Cooked';
         UpText := ['wordfish'];
+        Stackable := False;
+        EquipLevel := -1;
+      end;
+
+    FISH_COOKED_SHARK:
+      with MSI_Items[whichItem] do
+      begin
+        Name := 'Cooked shark';
+        StatsName := 'Shark Cooked';
+        UpText := ['hark'];
         Stackable := False;
         EquipLevel := -1;
       end;
@@ -1495,7 +1526,7 @@ begin
       begin
         Name := 'Vial of water';
         StatsName := 'Vials Filled';
-        UpText := ['ial of water'];
+        UpText := ['ial of water', 'water'];
         Stackable := False;
         EquipLevel := -1;
       end;
@@ -1680,6 +1711,7 @@ begin
           FISH_RAW_TUNA      : e := 80.0;
           FISH_RAW_LOBSTER   : e := 90.0;
           FISH_RAW_SWORDFISH : e := 100.0;
+          FISH_RAW_SHARK     : e := 110.0;
 
           else
              MSI_SubDebug('MSI_GetItemExperiences: Invalid object for fishing: ' + IntToStr(Items[i]));
@@ -1697,7 +1729,8 @@ begin
           FISH_RAW_SALMON,
           FISH_RAW_TUNA,
           FISH_RAW_LOBSTER,
-          FISH_RAW_SWORDFISH    : e := 0.0;
+          FISH_RAW_SWORDFISH,
+          FISH_RAW_SHARK        : e := 0.0;
           FISH_COOKED_SHRIMP    : e := 30.0;
           FISH_COOKED_CRAYFISH  : e := 30.0;
           FISH_COOKED_SARDINE   : e := 40.0;
@@ -1709,6 +1742,7 @@ begin
           FISH_COOKED_TUNA      : e := 100.0;
           FISH_COOKED_LOBSTER   : e := 120.0;
           FISH_COOKED_SWORDFISH : e := 140.0;
+          FISH_COOKED_SHARK     : e := 210.0;
 
           else
              MSI_SubDebug('MSI_GetItemExperiences: Invalid object for cooking: ' + IntToStr(Items[i]));
@@ -1872,71 +1906,6 @@ begin
 end;
 
 (*
-MSI_FindTool
-~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-  function MSI_FindTool(Tool, WhichTab: Integer; var x, y: Integer): Boolean;
-
-Returns true if the specified tool (Tool) is found in the game tab (WhichTab).
-Sets the items coordinates to x and y.  Uses DTMs to find the item, and adds the
-tool to the exceptions array if found in the inventory.
-
-.. note::
-
-  | Author: Coh3n
-  | Last Updated: 28 March 2011 by Coh3n
-
-Example:
-
-.. code-block:: pascal
-
-  if (MSI_FindTool(HATCHET_BRONZE, TAB_INV, x, y)) then
-    MSI_Debug('Found ' + MSI_Items[HATCHET_BRONZE].Name);
-*)
-function MSI_FindTool(Tool, WhichTab: Integer; var x, y: Integer): Boolean;
-var
-  s: string;
-  t: Integer;
-begin
-  if (not LoggedIn) then
-    Exit;
-
-  GameTab(WhichTab);
-
-  if (WhichTab = TAB_INV) then
-    s := 'Inventory'
-  else
-    s := 'Equipment';
-
-  // Used because for whatever reason, after switching players, GameTab doesn't like to work
-  if (WhichTab = TAB_EQUIP) and (GetCurrentTab <> TAB_EQUIP) then
-  begin
-    MouseBox(680, 180, 693, 192, 1);
-
-    t := GetSystemTime + 5000;
-    while (GetSystemTime < t) and (GetCurrentTab <> TAB_EQUIP) do
-      Wait(RandomRange(500, 1000));
-  end;
-
-  MSI_AddHeader('MSI_FindTool');
-  MSI_Debug('Searching ' + s + ' tab');
-
-  if (FindDTM(MSI_Items[Tool].DTM, x, y, MIX1, MIY1, MIX2, MIY2)) then
-  begin
-    Result := True;
-    MSI_Debug('Found DTM of ' + MSI_Items[Tool].Name);
-
-    if (WhichTab = TAB_INV) then
-      MSI_AddException(Tool, CoordsToItem(x, y));
-  end else
-		MSI_Debug('Failed to find DTM of ' + MSI_Items[Tool].Name);
-
-  MSI_CloseHeader('MSI_FindTool: ' + BoolToStr(Result))
-end;
-
-(*
 MSI_FindItemSlots
 ~~~~~~~~~~~~~~~~~
 
@@ -1964,7 +1933,7 @@ Example:
 *)
 function MSI_FindItemSlots(Item: Integer): TIntegerArray;
 var
-  i, j, l, t: Integer;
+  i, j, t, c: Integer;
   itemPoints: TPointArray;
   b: TBox;
   bankType: TBank;
@@ -1973,8 +1942,8 @@ begin
   if (MSI_Items[Item].Name = '') or (not LoggedIn) then
     Exit;
 
-  SetLength(result, 0);
-  GameTab(TAB_INV);
+  gameTab(TAB_INV);
+  c := 0;
 
   bankType := MSI_Scripts[MSI_Players[CurrentPlayer].Scripts[CurrentScript].Name].BankType;
   case bankType of
@@ -1983,6 +1952,8 @@ begin
   end;
 
   itemPoints := ItemCoordinates(searchArea, 'dtm', MSI_Items[Item].DTM, []);
+  setLength(result, length(itemPoints));
+
   for i := 0 to High(itemPoints) do
     for j := 1 to 28 do
     begin
@@ -1993,11 +1964,12 @@ begin
 
       if (PointInBox(itemPoints[i], b)) then
       begin
-        l := Length(result);
-        SetLength(result, l + 1);
-        result[l] := j;
+        result[c] := j;
+        inc(c);
       end;
     end;
+
+  setLength(result, c);
 
   // If the item is stackable and more than one is found, will check uptext to remove bad items
   if (MSI_Items[Item].Stackable) then
@@ -2286,6 +2258,73 @@ begin
 end;
 
 (*
+MSI_FindTool
+~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MSI_FindTool(tool, whichTab: integer; var x, y: integer): boolean;
+
+Returns true if the specified tool (Tool) is found in the game tab (WhichTab).
+Sets the items coordinates to x and y.  Uses DTMs to find the item, and adds the
+tool to the exceptions array if found in the inventory.
+
+.. note::
+
+  | Author: Coh3n
+  | Last Updated: 28 June 2011 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  if (MSI_FindTool(HATCHET_BRONZE, TAB_INV, x, y)) then
+    MSI_Debug('Found ' + MSI_Items[HATCHET_BRONZE].Name);
+*)
+function MSI_FindTool(tool, whichTab: integer; var x, y: integer): boolean;
+var
+  s: string;
+  toolFound: boolean;
+  tools: TPointArray;
+begin
+  if (not loggedIn) then
+    exit;
+
+  gameTab(whichTab);
+  MSI_AddHeader('MSI_FindTool');
+
+  if (whichTab = TAB_INV) then
+  begin
+    s := 'Inventory';
+    tools := itemCoordinates('inv', 'dtm', MSI_Items[tool].DTM, []);
+    if (length(tools) > 0) then
+    begin
+      toolFound := true;
+      x := tools[0].x;
+      y := tools[0].y;
+    end;
+  end else begin
+    s := 'Equipment';
+    toolFound := FindDTM(MSI_Items[tool].DTM, x, y, 560, 285, 605, 320);
+  end;
+
+  MSI_Debug('Searching ' + s + ' tab');
+
+  if (toolFound) then
+  begin
+    result := true;
+    MSI_Debug('Found DTM of ' + MSI_Items[tool].name);
+
+    if (whichTab = TAB_INV) then
+      if (not MSI_EquipItem(SKILL_ATTACK, tool)) then
+        MSI_AddException(tool, coordsToItem(x, y));
+  end else
+		MSI_Debug('Failed to find DTM of ' + MSI_Items[tool].name);
+
+  MSI_CloseHeader('MSI_FindTool: ' + boolToStr(result))
+end;
+
+(*
 MSI_DropAll
 ~~~~~~~~~~~
 
@@ -2345,7 +2384,7 @@ Waits until the item 'item' is no longer found in the inventory.
 .. note::
 
   | Author: NCSD & Coh3n
-  | Last Updated: 27 April 2011 by Coh3n
+  | Last Updated: 02 July 2011 by Coh3n
 
 Example:
 
@@ -2356,29 +2395,42 @@ Example:
 *)
 function MSI_WaitItemGone(item: TItem): boolean;
 var
-  t: Integer;
+  t, tt, howMany: Integer;
 begin
-  if (not LoggedIn) then
-    Exit;
+  if (not loggedIn) then
+    exit;
 
   MSI_AddHeader('MSI_WaitItemGone');
 
-  t := (GetSystemTime + 180000);
-  while (GetSystemTime < t) do
-  begin
-    if (CountItems('dtm', item.DTM, []) = 0) then
+  t := (getSystemTime + 180000);
+  repeat
+    howMany := countItems('dtm', item.DTM, []);
+
+    tt := (getSystemTime + 5000);
+    while (getSystemTime < tt) do
     begin
-      Result := True;
-      Break;
+      if (countItems('dtm', item.DTM, []) = 0) then
+      begin
+        result := true;
+        break;
+      end;
+
+      MSI_FindRandoms(false);
+      MSI_AntiBan(randomRange(0, 7000), ANTI_BAN_CHANCE);
+
+      wait(1000);
     end;
 
-    MSI_FindRandoms(False);
-    MSI_AntiBan(RandomRange(0, 7000), ANTI_BAN_CHANCE);
+    if (not result) then
+      if (countItems('dtm', item.DTM, []) >= howMany) then
+      begin
+        MSI_Debug('We''ve stopped converting the material');
+        result := false;
+        break;
+      end;
+  until(result or (getSystemTime > t) or (not loggedIn));
 
-    Wait(1000);
-  end;
-
-  MSI_CloseHeader('MSI_WaitItemGone: ' + BoolToStr(Result));
+  MSI_CloseHeader('MSI_WaitItemGone: ' + boolToStr(result));
 end;
 
 (*

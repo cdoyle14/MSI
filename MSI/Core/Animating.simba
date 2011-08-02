@@ -44,7 +44,7 @@ begin
       with Result do
       begin
         Name := 'Player Idle';
-        MinPixelShift := 10;
+        MinPixelShift := 0;
         MaxPixelShift := 60;
         PixelBox := IntToBox(PLBX1, PLBY1, PLBX2, PLBY2);
         Interval := 25;
@@ -56,12 +56,12 @@ begin
       with Result do
       begin
         Name := 'Low Alching';
-        MinPixelShift := 500;
-        MaxPixelShift := 10000;
+        MinPixelShift := 80;
+        MaxPixelShift := 260;
         PixelBox := IntToBox(MSCX - 30, MSCY - 40, MSCX + 30, MSCY + 15);
-        Interval := 200;
-        MaxTime := 2000;
-        WaitTime := 2000;
+        Interval := 20;
+        MaxTime := 75;
+        WaitTime := 150;
       end;
 
     ANIM_ALCH_HIGH:
@@ -96,8 +96,8 @@ begin
         MaxPixelShift := 360;
         PixelBox := IntToBox(PLBX1, PLBY1, PLBX2, PLBY2);
         Interval := 50;
-        MaxTime := 250;  // (35 * 5) = 175 (Gets the average pixel shift from 5 tries)
-        WaitTime := 700; // (175 * 4) = 700 (Has to fail 4 times to not be animating)
+        MaxTime := 250;  // (50 * 5) = 250 (Gets the average pixel shift from 5 tries)
+        WaitTime := 1000; // (250 * 4) = 1000 (Has to fail 4 times to not be animating)
       end;
   end;
 end;
@@ -173,8 +173,10 @@ var
 begin
   with Anim do
   begin
-    if (MSI_SetupVars[SETUP_DEBUG_SMART]) then
-      SMART_DrawBoxEx(true, pixelBox, clYellow);
+    {$IFDEF SMART}
+      if (MSI_Settings[SETUP_DEBUG_SMART]) then
+        SMART_DrawBoxEx(true, pixelBox, clYellow);
+    {$ENDIF}
 
     while (true) do
     begin

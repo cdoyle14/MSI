@@ -1,33 +1,123 @@
+(*
+Cooking
+=======
+
+The Cooking file stores any functions or procedures that are specific to the
+cooking skill.
+
+The source for Fishing.simba can be found
+`here <https://github.com/SRL/MSI/raw/master/MSI/Skills/Cooking.simba>`_.
+
+*)
+
+(*
+MSI_SetupCooking
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MSI_SetupCooking: Boolean;
+
+Sets the player up for cooking.  Will start from any step in the script,
+whether the player is finished cooking at the range or at the bank with an
+empty inventory.  This is the prcedure pointed to the TScript's PlayerSetup
+field.
+
+.. note::
+
+  | Author: Coh3n
+  | Last Updated: 02 July 2011 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  MSI_Scripts[SCRIPT_AK_COOKER].PlayerSetup := @MSI_SetupCooking;
+*)
 function MSI_SetupCooking: Boolean;
 var
-  i: Integer;
+  i, j, tries: integer;
   recipe: TMaterial;
+  script: TScript;
+label
+  procStart;
 begin
-  if (not LoggedIn) then
-    Exit;
+  if (not loggedIn) then
+    exit;
 
-  with MSI_Players[CurrentPlayer] do
-    if (MSI_Scripts[Scripts[CurrentScript].Name].GetMaterials) then
-      for i := 0 to High(Scripts[CurrentScript].Materials) do
+  repeat
+    with MSI_Players[CurrentPlayer] do
+    begin
+      procStart:
+      for i := 0 to high(scripts[currentScript].materials) do
       begin
-        recipe := MSI_GetMaterial(Scripts[CurrentScript].Materials[i]);
+        recipe := MSI_GetMaterial(scripts[currentScript].materials[i]);
 
-        if (CountItems('dtm', MSI_Items[recipe.Supplies[0][0]].DTM, []) <= 0) then
+        if (length(recipe.supplies) > 0) then
+          for j := 0 to high(recipe.supplies) do
+            if (countItems('dtm', MSI_Items[recipe.supplies[j][0]].DTM, []) <= 0) then
+              break
+            else begin
+              MSI_SubDebug('Materials found in inventory');
+              result := true;
+              break;
+            end;
+
+        if (result) then
+          break;
+      end;
+
+      // if items aren't found, try to bank
+      if (not result) then
+        if (MSI_Scripts[scripts[currentScript].name].getMaterials) then
+          result := MSI_Scripts[scripts[currentScript].name].bankObjects();
+
+      // if couldn't bank, try to walk to bank
+      if ((not result) and (tries < 3)) then
+        if (not MSI_Locations[location].atBank) then
         begin
-          MSI_SubDebug('Withdrawing items..');
-          Result := MSI_Scripts[Scripts[CurrentScript].Name].BankObjects();
-        end else begin
-          MSI_SubDebug('Materials found in inventory');
-          Result := True;
+          script := MSI_Scripts[scripts[currentScript].name];
+          if (MSI_PerformWalk(script.pathInfo, false)) then
+          begin
+            inc(tries);
+            goto procStart;
+          end;
         end;
 
-        if (Result) then
-          Break;
-      end
-    else
-      MSI_SubDebug('Script doesn''t require item withdrawing');
+      if (not result) then
+      begin
+        inc(tries);
+        MSI_SubDebug('MSI_SetupCooking: Failed ' + toStr(tries) + ' times');
+      end;
+    end;
+  until(result or (tries >= 3) or (not loggedIn));
 end;
 
+(*
+MSI_CookAll
+~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MSI_CookAll(recipe: TMaterial): Boolean;
+
+Clicks the "Cook All" screen that comes up when you use an item on a range.
+
+.. note::
+
+  | Author: Coh3n & NCDS
+  | Last Updated: 02 July 2011 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  function MSI_CookFullInv: Boolean;
+  begin
+    with MSI_Players[CurrentPlayer].Scripts[CurrentScript] do
+      Result := MSI_ConvertMaterial(@MSI_CookAll, CookingSpot);
+  end;
+*)
 function MSI_CookAll(recipe: TMaterial): Boolean;
 var
   x, y, t, i: Integer;
@@ -39,7 +129,7 @@ begin
     for i := 0 to High(recipe.Supplies) do
       if (FindDTM(MSI_Items[recipe.Supplies[i][0]].DTM, x, y, MCx1, MCy1, MCx2, MCy2)) then
       begin
-        MMouse(x, y, -25, 25);
+        MMouse(x, y, -15, 15);
 
         if (WaitUpTextMulti(['ook A', 'k All', 'ook', 'll'], 2000)) then
         begin
@@ -64,6 +154,29 @@ begin
   Result := (not MSI_CB_DoAllScreen);
 end;
 
+(*
+MSI_CookFullInv
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MSI_CookFullInv: Boolean;
+
+Calls MSI_ConvertMaterial (
+`Materials.simba <https://github.com/SRL/MSI/raw/master/MSI/Skills/Materials.simba>`_)
+and is pointed to a cooking script's 'AutoObjects' attribute.
+
+.. note::
+
+  | Author: Coh3n
+  | Last Updated: 02 July 2011 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  MSI_Scripts[SCRIPT_AK_COOKER].AutoObjects := @MSI_CookFullInv;
+*)
 function MSI_CookFullInv: Boolean;
 begin
   with MSI_Players[CurrentPlayer].Scripts[CurrentScript] do

@@ -15,7 +15,7 @@ const
   MAX_RUNES = 1000000000; // A billion
 
 var
-  MSI_CurrentSpell: Integer;
+  currentSpell: Integer;
 
 (*
 MSI_LoadSpell
@@ -70,6 +70,23 @@ begin
         AutoCast := False;
         Runes := [RUNE_NATURE, RUNE_FIRE];
         RuneAmounts := [1, 5];
+      end;
+
+    SPELL_TELE_HOME:
+      with MSI_Spells[Spell] do
+      begin
+        Name := 'Home Teleport';
+        StatsName := 'Home Teleports';
+        Constant := SPELL_TELE_HOME;
+        AnimConst := ANIM_TELE_HOME;
+        Level := 1;
+        Experience := 0;
+        Staffs := [];
+        FreeBox := IntToBox(564, 218, 584, 239);
+        MemberBox := IntToBox(564, 218, 584, 239);
+        AutoCast := False;
+        Runes := [];
+        RuneAmounts := [];
       end;
   end;
 end;
@@ -230,40 +247,43 @@ Example:
 *)
 function MSI_FindStaffs(Spells: TIntegerArray): TIntegerArray;
 var
-  i, j, t, x, y: Integer;
+  i, j, t, x, y, c: Integer;
   tabs, possStaffs: TIntegerArray;
 begin
-  if (not LoggedIn) then
-    Exit;
+  if (not loggedIn) then
+    exit;
 
   MSI_AddHeader('MSI_FindStaffs');
 
-  if (GetCurrentTab = TAB_INV) then
+  if (getCurrentTab = TAB_EQUIP) then
     tabs := [TAB_INV, TAB_EQUIP]
   else
     tabs := [TAB_EQUIP, TAB_INV];
 
   possStaffs := MSI_GetPossibleStaffs(Spells);
+  setLength(result, length(possStaffs));
+  c := 0;
 
-  for i := 0 to High(tabs) do
+  for i := high(tabs) downto 0 do
   begin
-    for j := 0 to High(possStaffs) do
+    for j := high(possStaffs) downto 0 do
       if (MSI_FindTool(possStaffs[j], tabs[i], x, y)) then
       begin
         if (tabs[i] = TAB_INV) then
-          MSI_Items[possStaffs[j]].InvSlot := CoordsToItem(x, y); // Set tool's inventory slot
+          MSI_Items[possStaffs[j]].invSlot := coordsToItem(x, y); // Set tool's inventory slot
 
-        SetLength(Result, (Length(Result) + 1));
-        Result[High(Result)] := possStaffs[j];
+        result[c] := possStaffs[j]
+        inc(c);
       end else
-        Inc(t);
+        inc(t);
 
     // If all staffs are found, it will break, otherwise check the other gametab
     if (t <= 0) then
-      Break;
+      break;
   end;
 
-  MSI_CloseHeader('MSI_FindStaffs: '+ToStr(Result));
+  setLength(result, c);
+  MSI_CloseHeader('MSI_FindStaffs: ' + toStr(result));
 end;
 
 (*
@@ -409,7 +429,7 @@ Returns the runes that have an associated staff (i.e. Air, Water, Fire, etc.).
 .. note::
 
   | Author: Coh3n
-  | Last Updated: 14 November 2010 by Coh3n
+  | Last Updated: 23 June 2011 by Coh3n
 
 Example:
 
@@ -419,20 +439,24 @@ Example:
 *)
 function MSI_GetStaffRunes(): TIntegerArray;
 var
-  i, t: Integer;
+  i, t, c: Integer;
   runeStaffs, possStaffs, chosenStaffs: TIntegerArray;
 begin
   runeStaffs := [ RUNE_AIR, RUNE_EARTH, RUNE_FIRE, RUNE_WATER ];
   possStaffs := [ STAFF_AIR, STAFF_EARTH, STAFF_FIRE, STAFF_WATER ];
+
   chosenStaffs := MSI_ChooseStaffs();
+  setLength(result, length(chosenStaffs));
 
   for i := 0 to High(chosenStaffs) do
-    if (InIntArrayEx(possStaffs, t, chosenStaffs[i])) then
+    if (inIntArrayEx(possStaffs, t, chosenStaffs[i])) then
     begin
-      SetLength(Result, Length(Result) + 1);
-      Result[High(Result)] := runeStaffs[t];
-      MSI_SubDebug(MSI_Items[runeStaffs[t]+MSI_RUNE_AIR].Name+' not needed, we have a staff');
+      result[c] := runeStaffs[t];
+      inc(c)
+      MSI_SubDebug(MSI_Items[runeStaffs[t]+MSI_RUNE_AIR].name+' not needed, we have a staff');
     end;
+
+  setLength(result, c);
 end;
 
 (*
@@ -601,27 +625,18 @@ begin
 
   with MSI_Players[CurrentPlayer].Scripts[CurrentScript] do
   begin
-    MSI_CurrentSpell := 0;
+    currentSpell := 0;
     SetupSpells; // Set all the spell information (SRL's magic.scar)
     SetLength(Staffs, Length(Spells));
 
     if (length(maxCasts) <= 0) then
       maxCasts := MSI_CalculateCasts();
 
-    // If can't cast spell, delete it from the necessary arrays
-   {
-    for i := 0 to High(MaxCasts) do
-      if (MaxCasts[i] <= 0) then
-      begin
-        DeleteValueInIntArray(MaxCasts, i);
-        DeleteValueInIntArray(Spells, i);
-      end;
-   }
-    // Equip the staff for the MSI_CurrentSpell
-    if (MSI_Items[Staffs[MSI_CurrentSpell]].InvSlot > 0) then
+    // Equip the staff for the currentSpell
+    if (MSI_Items[Staffs[currentSpell]].InvSlot > 0) then
     begin
-      MSI_Debug('Equipping '+Capitalize(MSI_Items[Staffs[MSI_CurrentSpell]].Name));
-      InvMouse(MSI_Items[Staffs[MSI_CurrentSpell]].InvSlot, 1); // 1 = LeftClick
+      MSI_Debug('Equipping '+Capitalize(MSI_Items[Staffs[currentSpell]].Name));
+      InvMouse(MSI_Items[Staffs[currentSpell]].InvSlot, 1); // 1 = LeftClick
       Wait(RandomRange(200, 500));
     end;
 
@@ -695,7 +710,7 @@ difference from the previous amount to the progress report/stats variables.
 .. note::
 
   | Author: Coh3n
-  | Last Updated: 04 June 2011 by Coh3n
+  | Last Updated: 11 July 2011 by Coh3n
 
 Example:
 
@@ -705,13 +720,15 @@ Example:
 *)
 procedure MSI_CastsDone();
 var
-  i, castsDone, castsDiff: integer;
+  i, castsDiff: integer;
   castsLeft: TIntegerArray;
+  spell: TMagicSpell;
 begin
   if (not loggedIn) then
     exit;
 
   castsLeft := MSI_CalculateCasts();
+
   if (length(castsLeft) > 0) then
     for i := 0 to high(castsLeft) do
       with MSI_Players[currentPlayer] do
@@ -719,16 +736,20 @@ begin
         if (castsLeft[i] <= 0) then
           continue;
 
-        castsDone := (Scripts[currentScript].maxCasts[i] - castsLeft[i]);
-        MSI_SubDebug('Number of casts[' + intToStr(i) + ']: ' + intToStr(castsDone));
+        spell := MSI_Spells[scripts[currentScript].spells[currentSpell]];
 
-        castsDiff := (castsDone - ReportInfo.Casts[currentScript][MSI_CurrentSpell]);
-        incEx(ReportInfo.Casts[currentScript][MSI_CurrentSpell], castsDiff);
-        MSI_AddToProggy(PROG_ADD_CASTS, -1, -1, castsDiff);
-        stats_IncVariable(MSI_Spells[Scripts[currentScript].Spells[MSI_CurrentSpell]].StatsName, castsDiff);
+        // gets the difference from max number of casts and runes in inventory
+        castsDiff := ((scripts[currentScript].maxCasts[i] - castsLeft[i] + 1) -
+          reportInfo.casts[currentScript][currentSpell]);
 
-        MSI_AddToProggy(PROG_ADD_EXP, -1, -1, (Round(MSI_Spells[Scripts[currentScript].Spells[MSI_CurrentSpell]].Experience * castsDiff)));
-        MSI_SubDebug('Casts left[' + intToStr(i) + ']: ' + intToStr(castsLeft[i]));
+        if (castsDiff > 0) then
+        begin
+          incEx(reportInfo.casts[currentScript][currentSpell], castsDiff); // casts per spell
+          stats_IncVariable(spell.statsName, castsDiff);
+
+          MSI_AddToProggy(PROG_ADD_CASTS, -1, -1, castsDiff); // total casts for current script
+          MSI_AddToProggy(PROG_ADD_EXP, -1, -1, (round(spell.experience * castsDiff)));
+        end;
       end;
 end;
 
@@ -738,7 +759,7 @@ MSI_CastInvSlot
 
 .. code-block:: pascal
 
-  function MSI_CastInvSlot(Spell, Slot: Integer): Boolean;
+  function MSI_CastInvSlot(spell, slot: Integer): boolean;
 
 Returns true when the spell 'Spell' is cast on the inventory slot 'Slot.'
 
@@ -754,44 +775,44 @@ Example:
   if (MSI_CastInvSlot(SPELL_ALCH_HIGH, 16)) then
     MSI_Debug('Cast high alchemy');
 *)
-function MSI_CastInvSlot(Spell, Slot: Integer): Boolean;
+function MSI_CastInvSlot(spell, slot: Integer): boolean;
 var
-  x, y, t: Integer;
+  x, y, t: integer;
   b: TBox;
 begin
-  if (not LoggedIn) then
-    Exit;
+  if (not loggedIn) then
+    exit;
 
   MSI_AddHeader('MSI_CastInvSlot');
 
-  b := InvBox(Slot);
+  b := invBox(slot);
 
-  if (MSI_ClickSpell(Spell)) then
+  if (MSI_ClickSpell(spell)) then
   begin
-    MSI_FindRandoms(False);
-    GetMousePos(x, y);
+    MSI_FindRandoms(false);
+    getMousePos(x, y);
     MSI_CastsDone();
 
-    if (PointInBox(Point(x, y), b)) then
-      Mouse(x, y, 0, 0, True)
+    if (pointInBox(point(x, y), b)) then
+      mouse(x, y, 0, 0, true)
     else
-      MouseBox(b.x1, b.y1, b.x2, b.y2, 1); // 1 = Left Click
+      mouseBox(b.x1, b.y1, b.x2, b.y2, 1); // 1 = Left Click
 
-    t := (GetSystemTime + 5000);
-    while (GetSystemTime < t) do
+    t := (getSystemTime + 5000);
+    while (getSystemTime < t) do
     begin
-      if (GetCurrentTab = TAB_MAGIC) then
+      if (getCurrentTab = TAB_MAGIC) then
       begin
-        MSI_Debug('Cast '+MSI_Spells[Spell].Name+' on slot '+IntToStr(Slot));
-        Result := True;
-        Break;
+        MSI_Debug('Cast '+MSI_Spells[spell].name+' on slot '+intToStr(slot));
+        result := true;
+        break;
       end;
 
-      Wait(250 + Random(250));
+      wait(250 + Random(250));
     end;
   end;
 
-  MSI_CloseHeader('MSI_CastInvSlot: '+BoolToStr(Result));
+  MSI_CloseHeader('MSI_CastInvSlot: '+boolToStr(result));
 end;
 
 (*
@@ -809,7 +830,7 @@ set number of alchs (CASTS_BEFORE_REPORT, found at the top of Magic.simba).
 .. note::
 
   | Author: Coh3n
-  | Last Updated: 04 June 2010 by Coh3n
+  | Last Updated: 11 July 2011 by Coh3n
 
 Example:
 
@@ -825,8 +846,6 @@ var
 begin
   if (not LoggedIn) then
     Exit;
-
-  MSI_AddHeader('MSI_Alch');
 
   t := GetSystemTime + (60000 * 3); // Will stop if doesn't cast in 5 minutes
   idealSlot := MSI_GetIdealSlot(Spell);
@@ -873,16 +892,14 @@ begin
               begin
                 MSI_Debug('Ran out of items to alch!');
                 MSI_Players[CurrentPlayer].ReportInfo.FalseReason := 'Ran out of items to alch';
-                MSI_CloseHeader('MSI_Alch: ' + BoolToStr(Result));
                 Exit;
               end else
                 Break;
 
-        if (IsChatBoxTextBetween(ALCH_COIN_MESSAGE, 8, 8, 6)) then
+        if (isChatBoxTextAnyLine(ALCH_COIN_MESSAGE, clBlack)) then
         begin
           MSI_Debug('Alching Coins!');
           MSI_Players[CurrentPlayer].ReportInfo.FalseReason := 'Tried to alch coins';
-          MSI_CloseHeader('MSI_Alch: ' + BoolToStr(Result));
           Exit;
         end;
 
@@ -893,36 +910,30 @@ begin
 
         with MSI_Players[CurrentPlayer].ReportInfo do
         begin
-          // Result is true if we've cast the maximum
-          if (Casts[MSI_CurrentSpell][CurrentScript] >= MaxCasts[MSI_CurrentSpell]) then
+          MSI_Debug('Casts: '+toStr(casts[currentSpell][currentScript]));
+          MSI_Debug('Max: '+toStr(maxCasts[currentSpell]));
+
+          // Result is false if we've cast the maximum
+          if (Casts[currentScript][CurrentSpell] >= MaxCasts[currentSpell]) then
           begin
-            MSI_Debug('Cast maximum number of '+MSI_Spells[Spell].Name);
-            MSI_CloseHeader('MSI_Alch: ' + BoolToStr(Result));
-            FalseReason := 'Cast maximum number of '+MSI_Spells[Spell].Name;
+            MSI_Debug('Cast maximum ('+MSI_Spells[spell].name+')');
+            falseReason := 'Cast maximum ('+MSI_Spells[spell].name+')';
             Exit;
           end;
 
-          if ((Casts[CurrentScript][MSI_CurrentSpell] mod CASTS_BEFORE_REPORT) = 0) then
-          begin
-            Result := True;
-            MSI_CloseHeader('MSI_Alch: ' + BoolToStr(Result));
-            Exit;
-          end;
+          if (Casts[CurrentScript][currentSpell] > 0) then
+            if ((Casts[CurrentScript][currentSpell] mod CASTS_BEFORE_REPORT) = 0) then
+            begin
+              Result := True;
+              Exit;
+            end;
         end;
 
       until(GetSystemTime > t);
     end;
   end;
-
-  MSI_CloseHeader('MSI_Alch: ' + BoolToStr(Result));
 end;
 
-{******************************************************************************}
-{ function MSI_DoMagic(): Boolean;                                             }
-{ By: Coh3n                                                                    }
-{ Date: 24 November 2010                                                       }
-{ Description: Casts the maximum spells for each spell in DeclarePlayers       }
-{******************************************************************************}
 (*
 MSI_DoMagic
 ~~~~~~~~~~~
@@ -948,12 +959,13 @@ Example:
 function MSI_DoMagic(): Boolean;
 begin
   with MSI_Players[CurrentPlayer].Scripts[CurrentScript] do
-    case Spells[MSI_CurrentSpell] of
+    case Spells[currentSpell] of
       SPELL_ALCH_HIGH, SPELL_ALCH_LOW:
-        Result := MSI_Alch(Spells[MSI_CurrentSpell]);
+        Result := MSI_Alch(Spells[currentSpell]);
 
       else
         MSI_SubDebug('Invalid spell in DoMagic');
     end;
 end;
+
 

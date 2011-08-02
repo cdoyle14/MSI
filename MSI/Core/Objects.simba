@@ -23,7 +23,7 @@ MSI_GetObject
 
   function MSI_GetObject(Obj: Integer): TMSObject;
 
-Getst the TMSObject attributes for the object 'Obj'.
+Gets the TMSObject attributes for the object 'Obj'.
 
 .. note::
 
@@ -59,7 +59,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := False;
+        MaxTime            := 20000;
         AssociatedItems    := [LOGS_NORMAL];
       end;
 
@@ -81,7 +83,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := False;
+        MaxTime            := 45000;
         AssociatedItems    := [LOGS_OAK];
       end;
 
@@ -103,7 +107,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := False;
+        MaxTime            := 60000;
         AssociatedItems    := [LOGS_WILLOW];
       end;
 
@@ -125,6 +131,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
+        Track              := False;
+        MaxTime            := 60000;
         AssociatedItems    := [LOGS_WILLOW];
       end;
 
@@ -146,7 +155,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := False;
+        MaxTime            := 60000;
         AssociatedItems    := [LOGS_MAPLE];
       end;
 
@@ -168,7 +179,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := False;
+        MaxTime            := 75000;
         AssociatedItems    := [LOGS_YEW];
       end;
 
@@ -190,7 +203,9 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := False;
+        MaxTime            := 75000;
         AssociatedItems    := [LOGS_YEW];
       end;
 
@@ -213,8 +228,33 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
         MaxTime            := 90000;
         AssociatedItems    := [LOGS_MAGIC];
+      end;
+
+    TREE_IVY:
+      with result do
+      begin
+        Name               := 'TREE_IVY';
+        Uptexts            := ['Ivy'];
+        Options            := ['hop Iv'];
+        Level              := 68;
+        Colors             := [5082476];
+        Tol                := 5;
+        Hue                := 0.07;
+        Sat                := 0.27;
+        FindAllColors      := False;
+        W                  := 30;
+        H                  := 47;
+        Accuracy           := 5;
+        SearchArea         := MSBox;
+        ExcludeSelf        := False;
+        RightClickOnly     := False;
+        WaitToMove         := True;
+        MultiClick         := True;
+        MaxTime            := 90000;
+        AssociatedItems    := [];
       end;
 
     { BANKS ====================================== ]
@@ -237,26 +277,28 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_DB:
       with result do
       begin
         Name               := 'BANK_DRAYNOR';
-        Uptexts            := ['ount'];
-        Options            := ['uick'];
-        Colors             := [5136741];
+        Uptexts            := ['Banker', 'anker', 'ank'];
+        Options            := ['Bank Banker', 'ank B'];
+        Colors             := [1979715];
         Tol                := 5;
-        Hue                := 0.73;
-        Sat                := 0.49;
+        Hue                := 0.13;
+        Sat                := 0.24;
         FindAllColors      := False;
         W                  := 10;
         H                  := 10;
-        Accuracy           := 15;
-        SearchArea         := IntToBox(MSX1, MSY1, MSCX + 200, MSY2);
+        Accuracy           := 5;
+        SearchArea         := IntToBox(MSX1, MSY1, MSCX + 100, MSY2);
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_GE:
@@ -276,6 +318,7 @@ begin
         SearchArea         := MSBox
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_FE:
@@ -296,6 +339,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_VW:
@@ -316,6 +360,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_FW:
@@ -336,6 +381,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_EV:
@@ -356,6 +402,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     DBOX_PS:
@@ -376,6 +423,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_SV:
@@ -395,6 +443,7 @@ begin
         SearchArea         := MSBox
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_AK:
@@ -403,18 +452,19 @@ begin
         Name               := 'BANK_AL-KHARID';
         Uptexts            := ['ooth'];
         Options            := ['uick'];
-        Colors             := [4870229];
-        Tol                := 3;
-        Hue                := 0.76;
-        Sat                := 0.40;
+        Colors             := [6125447];
+        Tol                := 12;
+        Hue                := 0.04;
+        Sat                := 0.52;
         FindAllColors      := False;
-        W                  := 14;
-        H                  := 60;
-        Accuracy           := 20;
+        W                  := 15;
+        H                  := 20;
+        Accuracy           := 15;
         SearchArea         := IntToBox(MSX1, MSY1, MSCX, MSY2);
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     MSI_BANK_CB:
@@ -435,6 +485,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := True;
         WaitToMove         := True;
+        MultiClick         := True;
       end;
 
     { ROCKS ====================================== ]
@@ -446,18 +497,19 @@ begin
         Uptexts            := ['ocks'];
         Options            := ['ine'];
         Level              := 1;
-        Colors             := [5938111];
-        Tol                := 13;
+        Colors             := [7584739];
+        Tol                := 15;
         Hue                := 0.02;
-        Sat                := 1.23;
+        Sat                := 2.73;
         FindAllColors      := False;
-        W                  := 25;
-        H                  := 20;
+        W                  := 15;
+        H                  := 15;
         Accuracy           := 5;
         SearchArea         := MSBox;
         MaxTime            := 5000;
         ExcludeSelf        := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_CLAY];
       end;
@@ -481,6 +533,7 @@ begin
         MaxTime            := 7000;
         ExcludeSelf        := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_COPPER];
       end;
@@ -504,6 +557,7 @@ begin
         MaxTime            := 7000;
         ExcludeSelf        := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_TIN];
       end;
@@ -527,6 +581,7 @@ begin
         MaxTime            := 10000;
         ExcludeSelf        := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_IRON];
       end;
@@ -551,6 +606,7 @@ begin
         ExcludeSelf        := False;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_SILVER];
       end;
@@ -562,7 +618,7 @@ begin
         Uptexts            := ['ocks'];
         Options            := ['ine'];
         Level              := 30;
-        Colors             := [2171426];
+        Colors             := [2171426, 987152];
         Tol                := 5;
         Hue                := 0.00;
         Sat                := 0.63;
@@ -575,6 +631,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_COAL];
       end;
@@ -586,7 +643,7 @@ begin
         Uptexts            := ['ocks'];
         Options            := ['ine'];
         Level              := 40;
-        Colors             := [4702956];
+        Colors             := [4702956, 5231101];
         Tol                := 8;
         Hue                := 0.02;
         Sat                := 3.30;
@@ -598,6 +655,7 @@ begin
         MaxTime            := 45000;
         ExcludeSelf        := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_GOLD];
       end;
@@ -609,7 +667,7 @@ begin
         Uptexts            := ['ocks'];
         Options            := ['ine'];
         Level              := 55;
-        Colors             := [16624810];
+        Colors             := [16624810, 10648956];
         Tol                := 15;
         Hue                := 0.27;
         Sat                := 3.28;
@@ -622,6 +680,7 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_MITHRIL];
       end;
@@ -633,18 +692,19 @@ begin
         Uptexts            := ['ocks'];
         Options            := ['ine'];
         Level              := 70;
-        Colors             := [13100486, 15072730, 13953738];
+        Colors             := [13100486, 15072730, 13953738, 7965817];
         Tol                := 10;
         Hue                := 0.80;
         Sat                := 0.17;
         FindAllColors      := False;
         W                  := 25;
         H                  := 20;
-        Accuracy           := 5;
+        Accuracy           := 10;
         SearchArea         := MSBox;
         MaxTime            := 75000;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         Track              := True;
         AssociatedItems    := [ORE_ADAMANTITE];
       end;
@@ -667,6 +727,7 @@ begin
           SearchArea         := MSBox;
           ExcludeSelf        := True;
           WaitToMove         := True;
+          MultiClick         := True;
           Track              := True;
         end;
 
@@ -723,7 +784,7 @@ begin
               Options            := ['Harpoon'];
               Level              := 35;
               RightClickOnly     := True;
-              AssociatedItems    := [FISH_RAW_TUNA, FISH_RAW_SWORDFISH];
+              AssociatedItems    := [FISH_RAW_TUNA, FISH_RAW_SWORDFISH, FISH_RAW_SHARK];
             end;
         end;
       end;
@@ -736,10 +797,10 @@ begin
         Name               := 'RANGE_AL-KHARID';
         Uptexts            := ['Range'];
         Options            := ['Range'];
-        Colors             := [1779380, 1779646];
-        Tol                := 20;
-        Hue                := 0.06;
-        Sat                := 0.29;
+        Colors             := [1779641];
+        Tol                := 7;
+        Hue                := 0.07;
+        Sat                := 0.83;
         FindAllColors      := False;
         W                  := 30;
         H                  := 30;
@@ -748,20 +809,22 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := False;
         Track              := False;
         AssociatedItems    := [FISH_COOKED_SHRIMP, FISH_COOKED_ANCHOVIE,
                                FISH_COOKED_SARDINE, FISH_COOKED_HERRING,
                                FISH_COOKED_PIKE, FISH_COOKED_TROUT,
                                FISH_COOKED_SALMON, FISH_COOKED_LOBSTER,
-                               FISH_COOKED_TUNA, FISH_COOKED_SWORDFISH];
+                               FISH_COOKED_TUNA, FISH_COOKED_SWORDFISH,
+                               FISH_COOKED_SHARK];
       end;
 
     { Obstacles ================================== ]
     [============================================= }
-    LADDER_DOWN_MINE_GUILD:
+    LADDER_MG_DOWN:
       with result do
       begin
-        Name               := 'LADDER_DOWN_MINE_GUILD';
+        Name               := 'LADDER_MG_DOWN';
         Uptexts            := ['own Ladder'];
         Options            := ['own Ladder'];
         Colors             := [2709359];
@@ -776,17 +839,18 @@ begin
         ExcludeSelf        := True;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
         AssociatedItems    := [];
       end;
 
-    LADDER_UP_MINE_GUILD:
+    LADDER_MG_UP:
       with result do
       begin
-        Name               := 'LADDER_UP_MINE_GUILD';
+        Name               := 'LADDER_MG_UP';
         Uptexts            := ['up Ladder'];
         Options            := ['up Ladder'];
         Colors             := [4410190];
-        Tol                := 8;
+        Tol                := 5;
         Hue                := 0.26;
         Sat                := 0.14;
         FindAllColors      := False;
@@ -797,13 +861,14 @@ begin
         ExcludeSelf        := False;
         RightClickOnly     := False;
         WaitToMove         := True;
+        MultiClick         := True;
         AssociatedItems    := [];
       end;
 
-    FALADOR_WEST_CRUMBLING_WALL:
+    WALL_FW:
       with result do
       begin
-        Name               := 'FALADOR_WEST_CRUMBLING_WALL:';
+        Name               := 'WALL_FW';
         Uptexts            := ['rumbling wall'];
         Options            := ['rumbling wall'];
         Colors             := [9092811];
@@ -817,7 +882,29 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         AssociatedItems    := [];
+      end;
+
+    DOOR_NORMAL:
+      with result do
+      begin
+        Name               := 'DOOR_NORMAL';
+        Uptexts            := ['Open', 'pen'];
+        Options            := ['Open', 'pen'];
+        Colors             := [2514555];
+        Tol                := 8;
+        Hue                := 0.02;
+        Sat                := 0.27;
+        FindAllColors      := False;
+        W                  := 30;
+        H                  := 30;
+        Accuracy           := 10;
+        Track              := False
+        SearchArea         := MSBox;
+        ExcludeSelf        := False;
+        WaitToMove         := True;
+        MultiClick         := False;
       end;
 
     { Ground Items =============================== ]
@@ -839,6 +926,7 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := True;
         AssociatedItems    := [];
       end;
 
@@ -862,6 +950,7 @@ begin
         ExcludeSelf        := False;
         WaitToMove         := True;
         RightClickOnly     := True;
+        MultiClick         := True;
         AssociatedItems    := [];
       end;
 
@@ -884,6 +973,7 @@ begin
          SearchArea         := MSBox;
          ExcludeSelf        := True;
          WaitToMove         := True;
+         MultiClick         := False;
          AssociatedItems    := [CLAY_SOFT, VIAL_WATER, JUG_WATER, BOWL_WATER,
                                 BUCKET_WATER ];
       end;
@@ -905,6 +995,7 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := False;
         AssociatedItems    := [CLAY_SOFT, VIAL_WATER, JUG_WATER, BOWL_WATER,
                                BUCKET_WATER ];
       end;
@@ -926,6 +1017,7 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := False;
         AssociatedItems    := [CLAY_SOFT, VIAL_WATER, JUG_WATER, BOWL_WATER,
                                BUCKET_WATER ];
       end;
@@ -949,6 +1041,7 @@ begin
         SearchArea         := MSBox;
         ExcludeSelf        := True;
         WaitToMove         := True;
+        MultiClick         := False;
         AssociatedItems    := [BAR_BRONZE, BAR_IRON, BAR_SILVER, BAR_STEEL,
 		                           BAR_GOLD, BAR_MITHRIL, BAR_ADAMANT, BAR_RUNE];
       end;
@@ -994,7 +1087,7 @@ MSI_FilterTPADist
 
 .. code-block:: pascal
 
-  procedure MSI_FilterTPADist(var TPA: TPointArray; maxDist: extended);
+  procedure MSI_FilterTPADist(var TPA: TPointArray; maxDist: integer);
 
 Removes any points in 'TPA' that are within distance 'maxDist' of each other.
 If there are three points within 50 pixels of each other, this function will
@@ -1003,23 +1096,70 @@ filter out two of them.
 .. note::
 
   | Author: Coh3n
-  | Last Updated: 06 June 2011 by Coh3n
+  | Last Updated: 15 July 2011 by Nava2
 
 Example:
 
 .. code-block:: pascal
 
-  MSI_FilterTPADist(TPA);
+  // returns the TPA excluding any points that are within 15 pixels of each other
+  MSI_FilterTPADist(TPA, 15);
 *)
-procedure MSI_FilterTPADist(var TPA: TPointArray; maxDist: extended);
+procedure MSI_FilterTPADist(var TPA: TPointArray; maxDist: integer);
 var
-  i, j: integer;
+  c, d, i, j, t, l, h: integer;
+  newTPA: TPointArray;
+  inBadElements: TBooleanArray;
 begin
-  if (length(TPA) > 1) then // so it doesn't remove the only point
-    for i := 0 to high(TPA) do
-      for j := i to high(TPA) do
-        if (distance(TPA[i].x, TPA[i].y, TPA[j].x, TPA[j].y) < maxDist) then
-          deleteValueInTPA(TPA, j);
+  MSI_AddHeader('MSI_FilterTPADist');
+  MSI_Debug('Length (start): '+toStr(length(TPA)));
+  markTime(t);
+
+  h := high(TPA);
+  l := (h + 1); // i.e. length(TPA);
+
+  setLength(inBadElements, l);
+  setLength(newTPA, l);
+
+  for i := 0 to h do
+    inBadElements[i] := false; // just in case..
+
+  for i := 0 to (h - 1) do
+  begin
+    if (inBadElements[i]) then // increases speed significantly
+      continue;
+
+    for j := (i + 1) to h do
+    begin
+      if (inBadElements[j]) then // increases speed significantly
+        continue;
+
+      d := distance(TPA[i].x, TPA[i].y, TPA[j].x, TPA[j].y);
+      if (d <= maxDist) then // if points are too close
+      begin
+        MSI_Debug('Distance: '+toStr(d));
+        inBadElements[j] := true;
+      end;
+    end;
+  end;
+
+  MSI_Debug('Bad elements: '+toStr(inBadElements));
+  c := 0;
+
+  // set the new TPA
+  for i := 0 to h do
+    if (not inBadElements[i]) then
+    begin
+      newTPA[c] := TPA[i];
+      inc(c);
+    end;
+
+  setLength(newTPA, c);
+  TPA := newTPA;
+  MSI_Debug('New TPA: '+toStr(TPA));
+
+  MSI_Debug('Length (end): '+toStr(length(TPA)));
+  MSI_CloseHeader('MSI_FilterTPADist: Done ('+toStr(timeFromMark(t))+' ms)');
 end;
 
 (*
@@ -1049,7 +1189,7 @@ var
   TPA: TPointArray;
   ATPA: T2DPointArray;
   tpaBoxes: TBoxArray;
-  i, j, t, cts: integer;
+  i, j, t, h, c, cts: integer;
   badPoint: boolean;
 begin
   if (not loggedIn) then
@@ -1098,8 +1238,10 @@ begin
   setLength(TPA, length(ATPA));
 
   // draw points on SMART if setting enabled
-  if (MSI_SetupVars[SETUP_DEBUG_SMART]) then
-    drawDotsMulti(true, ATPA);
+  {$IFDEF SMART}
+    if (MSI_Settings[SETUP_DEBUG_SMART]) then
+      drawDotsMulti(true, ATPA);
+  {$ENDIF}
 
   // get the middle point of each TPA in the ATPA + create a box for each point
   setLength(tpaBoxes, length(TPA));
@@ -1109,8 +1251,12 @@ begin
     TPA[i] := middleTPA(ATPA[i]);
   end;
 
+  setLength(points, length(TPA));
+  h := high(TPA);
+  c := 0;
+
   // loop through all the points to see which are valid/invalid
-  for i := 0 to high(TPA) do
+  for i := 0 to h do
   begin
     badPoint := false;
 
@@ -1144,8 +1290,8 @@ begin
     // a valid point as been found
     if (not badPoint) then
     begin
-      setLength(Points, length(Points) + 1);
-      Points[high(Points)] := TPA[i];
+      points[c] := TPA[i];
+      inc(c);
 
     // add point's box to MSI_NotBoxes so it can be avoided next search
     end else begin
@@ -1154,16 +1300,19 @@ begin
     end;
   end;
 
+  setLength(points, c);
   sortTPAFrom(points, point(MSCX, MSCY));
-  MSI_FilterTPADist(points, min(obj.w, obj.h) * 2);
+  MSI_FilterTPADist(points, min(obj.w, obj.h));
 
   if (length(points) > 0) then
   begin
     result := true;
 
-    for i := 0 to high(Points) do
-      if (MSI_SetupVars[SETUP_DEBUG_SMART]) then
-        SMART_DrawBoxMS((i = 0), MSI_MakeBox(point(Points[i].x, Points[i].y), obj.w, obj.h), clGreen);
+    {$IFDEF SMART}
+      for i := 0 to high(points) do
+        if (MSI_Settings[SETUP_DEBUG_SMART]) then
+          SMART_DrawBoxMS((i = 0), MSI_MakeBox(points[i], obj.w, obj.h), clGreen);
+    {$ENDIF}
 
     MSI_Debug('Points found: ' + intToStr(length(points)));
   end;
@@ -1215,7 +1364,7 @@ begin
   setColorToleranceSpeed(2);
   setToleranceSpeed2Modifiers(obj.hue, obj.sat);
   previous := point(obj.x, obj.y);
-  t := (getSystemTime + 30000);
+  t := (getSystemTime + 10000);
   result := true;
   distMultiplier := (distance(MSCX, MSCY, obj.x, obj.y) / 40);
   if (distMultiplier < 1.0) then
@@ -1226,8 +1375,16 @@ begin
                                   round(obj.w * distMultiplier),
                                   round(obj.h * distMultiplier));
 
-    if (MSI_SetupVars[SETUP_DEBUG_SMART]) then
-      SMART_DrawBoxMS(true, obj.searchArea, clYellow);
+    // to avoid out of bounds tracking
+    if (obj.searchArea.x1 < MSX1) then obj.searchArea.x1 := MSX1;
+    if (obj.searchArea.y1 < MSY1) then obj.searchArea.y1 := MSY1;
+    if (obj.searchArea.x2 > MSX2) then obj.searchArea.x2 := MSX2;
+    if (obj.searchArea.y2 > MSY2) then obj.searchArea.y2 := MSY2;
+
+    {$IFDEF SMART}
+      if (MSI_Settings[SETUP_DEBUG_SMART]) then
+        SMART_DrawBoxMS(true, obj.searchArea, clYellow);
+    {$ENDIF}
 
     if (findColorsTolerance(TPA,
                             obj.colors[0],
@@ -1248,6 +1405,7 @@ begin
         distMultiplier := (distMultiplier - 1.0); // setting the box back to 'normal' size
       end;
     end else begin
+      MSI_Debug('Failed to find color');
       inc(tries);
       if (tries = 1) then
       begin
@@ -1311,7 +1469,7 @@ Example:
 function MSI_FindObjects(objs: TMSObjectArray; action: TMouseOption; var obj: TMSObject): boolean;
 var
   TPA: TPointArray;
-  i, j, clicks: Integer;
+  i, j: Integer;
   script: TScript;
 begin
   if (not loggedIn) then
@@ -1343,6 +1501,8 @@ begin
       for j := 0 to high(TPA) do
       begin
         obj := objs[i];
+        obj.x := TPA[j].x;
+        obj.y := TPA[j].y;
 
         if (action = moNothing) then
         begin
@@ -1350,11 +1510,11 @@ begin
           break;
         end;
 
-        mmouse(TPA[j].x, TPA[j].y, 5, 5);
+        mmouse(obj.x, obj.y, 5, 5);
         wait(randomRange(20, 50));
 
         // check the uptext of where we moved the mouse to
-        if (waitUptextMulti(obj.uptexts, randomRange(150, 200))) then
+        if (waitUptextMulti(obj.uptexts, randomRange(300, 500))) then
         begin
           // if only set to move the mouse, we're done
           if (action = moMove) then
@@ -1367,22 +1527,25 @@ begin
 
           // right click the object if set to (if not, 10% chance for antiban)
           if ((obj.rightClickOnly) or (action = moRight) or (random(10) = 1)) then
-            repeat // simulates multiple clicking like a human would
-              inc(clicks);
+          begin
+            if (obj.multiClick) then
+              result := MSI_MultiOption(obj.x, obj.y, obj.options, 10, 2)
+            else begin
               mouse(obj.x, obj.y, 0, 0, false);
-              if (waitOptionMulti(obj.options, randomRange(150, 200))) then
-                result := didClick(true, randomRange(500, 1000));
-
-              if (random(10) <= 7) then
-                break;
-            until(clicks = 3);
+              result := waitOptionMulti(obj.options, randomRange(150, 200));
+            end;
+          end;
 
           // left click
           if (not result) then
             if (action = moLeft) then
             begin
-              MSI_MultiClickMouse(obj.x, obj.y, 30, 3);
-              result := didClick(true, randomRange(500, 1000));
+              if (obj.multiClick) then
+                result := MSI_MultiMouse(obj.x, obj.y, 10, 3, true)
+              else begin
+                mouse(obj.x, obj.y, 0, 0, true);
+                result := didClick(true, randomRange(500, 1000));
+              end;
             end;
         end else begin
           // add to the bad boxes array if the uptext is wrong
@@ -1411,7 +1574,7 @@ begin
       break;
     end else begin
       flag;
-      MSI_FindRandoms(true);
+      result := MSI_FindRandoms(true);
     end;
   end;
 end;

@@ -11,42 +11,88 @@ The source for can be found
 *)
 
 (*
-MSI_MultiClickMouse
-~~~~~~~~~~~~~~~~~~~
+MSI_MultiMouse
+~~~~~~~~~~~~~~
 
 .. code-block:: pascal
 
-  procedure MSI_MultiClickMouse(x, y, maxClicks: integer);
+  function MSI_MultiMouse(x, y, chance, maxClicks: integer; red: boolean): boolean;
 
 Will simulate "spam" clicking on the point x, y.  Will do it a random amount
 between 1 and 'maxClicks'.  Will click once no matter what, then has a percent
-'chance' of clicking again after that.  Will not exceed 'maxClicks'.
+'chance' of clicking again after that.  Will not exceed 'maxClicks'.  if 'red'
+then will return true if the red X appears after clicking an object, else will
+return true after clicking.
 
 .. note::
 
   | Author: Coh3n
-  | Last Updated: 09 June 2011 by Coh3n
+  | Last Updated: 21 July 2011 by Coh3n
 
 Example:
 
 .. code-block:: pascal
 
   if (waitUptext('ree', 200)) then
-    MSI_MultiClickMouse(x, y, 35, 5);
+    MSI_MultiMouse(x, y, 35, 5);
 *)
-procedure MSI_MultiClickMouse(x, y, chance, maxClicks: integer);
+function MSI_MultiMouse(x, y, chance, maxClicks: integer; red: boolean): boolean;
 var
-  clicks, rX, rY: integer;
+  clicks: integer;
 begin
   repeat
     inc(clicks);
-    mouse(x, y, rX, rY, true);
+    mouse(x, y, 3, 3, true);
+
+    if (red) then
+      result := didClick(true, 50 + random(50))
+    else
+      result := true;
+
+    if (random(100) > chance) or (not result) then
+      break;
+  until(clicks >= maxClicks);
+end;
+
+(*
+MSI_MultiOption
+~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MSI_MultiOption(x, y: integer; options: TStringArray; chance, maxClicks: integer): boolean;
+
+Will right-click on the point x, y and choose the option 'options'.  Has a
+percentage chance (chace) of doing so and will do so a maximum of 'maxClicks'.
+Returns true if the correct option is chosen at least once.
+
+.. note::
+
+  | Author: Coh3n
+  | Last Updated: 08 July 2011 by Coh3n
+
+Example:
+
+.. code-block:: pascal
+
+  MSI_MultiOption(x, y, ['uick', 'ank-qui'], 30, 3);
+*)
+function MSI_MultiOption(x, y: integer; options: TStringArray; chance, maxClicks: integer): boolean;
+var
+  clicks: integer;
+begin
+  repeat // simulates multiple clicking like a human would
+    inc(clicks);
+    mouse(x, y, 0, 0, false);
+
+    // already chose option, if try again the option may not be there (avoids false negatives)
+    if (not result) then
+      result := waitOptionMulti(options, randomRange(150, 200))
+    else
+      waitOptionMulti(options, randomRange(150, 200));
 
     if (random(100) > chance) or (not didClick(true, 50 + random(50))) then
       break;
-
-    rX := randomRange(-10, 10);
-    rX := randomRange(-10, 10);
   until(clicks >= maxClicks);
 end;
 
@@ -92,6 +138,7 @@ begin
   for i := 0 to high(texts) do
   begin
     if (findText(x, y, texts[i], NPCChars, MCX1, MCY1, MCX2, MCY2)) then
+    begin
       if (clickCont[i]) then
         clickContinue(true, true)
       else begin
@@ -99,9 +146,74 @@ begin
         chatWait();
       end;
 
+      result := (i = high(texts));
+    end;
+
     wait(100 + random(300))
   end;
 end;
+
+(*
+MSI_IgnoreSpam
+~~~~~~~~~~~~~~~~
+
+.. code-block:: pascal
+
+  function MSI_IgnoreSpam: boolean;
+
+Searches the chat box for a name to appear 3 times in a row, then  will ignore it.
+Meant to ignore spam bots.
+
+.. note::
+
+  | Author: NCDS
+  | Last Updated: 12 July 2011 by NCDS
+
+Example:
+
+.. code-block:: pascal
+
+  MSI_IgnoreSpam;
+*)  {
+function MSI_IgnoreSpam: Boolean;
+var
+  i, h, ii, iii, bCount: Integer;
+  ignoreText: string;
+  textArray: TStringArray;
+  brokenText: array of TStringArray;
+  boolArray: TBooleanArray;
+begin
+  if (not LoggedIn) then
+    Exit;
+
+  textArray := ChatBoxTextArray(clChat);
+  for i := 0 to High(textArray) do
+    brokenText[i] := Explode(' ', textArray[i]);
+
+  for i := 0 to High(brokenText) do
+    for ii := 0 to High(brokenText) do
+    begin
+      if i = ii then
+        Continue;
+      if Length(brokenText[i]) > Length(brokenText[ii]) then
+        h := High(brokenText[ii]) else h := High(brokenText[i]);
+      SetLength(boolArray, h);
+
+      for iii := 0 to h do
+      begin
+        boolArray[iii] := ArrInStr(brokenText[ii][iii], brokenText[i][iii]);
+        for b := 0 to High(boolArray) do
+          if boolArray[b] then
+            Inc(bCount);
+        if bCount >= Round(Length(boolArray)*0.80) then
+        begin
+          ignoreText := Implode(' ', brokenText[i]);
+          ClickText(ignoreText, FriendChars, MCx1, MCy1, MCx2, MCy2, False);
+          Result := WaitOptionMulti(['ignore', 'ign', 'ore'], 1000);
+        end;
+      end;
+    end;
+end;}
 
 (*
 MSI_Antiban
@@ -117,7 +229,7 @@ procedures for a specified length of time in milliseconds (HowLong)
 .. note::
 
   | Author: Naum
-  | Last Updated: 9 Febuary 2011 by NCDS
+  | Last Updated: 12 July 2011 by NCDS
 
 Example:
 
@@ -132,6 +244,7 @@ Example:
 Procedure MSI_AntiBan(HowLong, ChancePerc: Integer);
 Var
   RanTab, I, Time, _avg : Integer;
+  b: Boolean;
 Begin
   if (not LoggedIn) then
     Exit;
@@ -139,8 +252,8 @@ Begin
   if (Random(100) > ChancePerc) or (NextAntiban > GetSystemTime) then
     Exit;
 
-  _avg := Round(MSI_SetupVars[SETUP_ANTIBAN_WAIT] * (RANDOM_TIME_PERCENT + (RANDOM_TIME_PERCENT * 0.50)));
-  NextAntiban := GetSystemTime + (MSI_SetupVars[SETUP_ANTIBAN_WAIT] + RandomRange(-Round(_avg / 2), _avg));
+  _avg := Round(MSI_Settings[SETUP_ANTIBAN_WAIT] * (RANDOM_TIME_PERCENT + (RANDOM_TIME_PERCENT * 0.50)));
+  NextAntiban := GetSystemTime + (MSI_Settings[SETUP_ANTIBAN_WAIT] + RandomRange(-Round(_avg / 2), _avg));
 
   MSI_SubDebug('MSI_AntiBan');
   if (MSI_Players[CurrentPlayer].Scripts[CurrentScript].Name = SCRIPT_ALCHER) and (Random(100) > ChancePerc) then
@@ -151,6 +264,8 @@ Begin
     Exit;
   end;
 
+  //MSI_IgnoreSpam;
+
   gameTab(TAB_INV);
 
   if (LeaveDangerZone) then
@@ -158,7 +273,7 @@ Begin
 
   Case HowLong Of
     0..2000:
-     Case Random(3) Of
+     Case Random(4) Of
         0 : SleepAndMoveMouse(HowLong + Random(HowLong/10));
         1 : Begin
               RanTab := RandomRange(TAB_Combat, TAB_LogOut);
@@ -167,11 +282,15 @@ Begin
               GameTab(tab_Inv);
             End;
         2 : RandomRClick;
+        3 : begin
+              b := IsXPBarOpen;
+              ToggleXPBar(not b);
+            end;
       End;
 
     2001..5000:
       Case Random(4) Of
-         0 : HoverSkill('Random', False);
+         0 : HoverSkill(MSI_Scripts[MSI_Players[CurrentPlayer].Scripts[CurrentScript].Name].SkillName, False);
          1 : PickUpMouse;
          2 : SleepAndMoveMouse(HowLong + Random(HowLong/10));
          3 : If Random(4) = 2 Then
@@ -282,7 +401,7 @@ begin
   MSI_SubDebug('Scanning for randoms...');
 
   {$IFDEF REFLECTION}
-  if (not ReflectionBroken) then
+  if (not MSI_HookBroken[HOOK_RANDOMS]) then
     randomDone := R_FindRandoms
   else
     randomDone := FindNormalRandoms;
@@ -294,6 +413,7 @@ begin
   begin
     Result := True;
     MSI_SubDebug('MSI_FindRandoms: Finished Random Event!');
+    ClickNorth(True);
   end else
     if (not LoggedIn) then
     begin
@@ -301,7 +421,7 @@ begin
       Exit;
     end;
 
-  NextRandCheck := GetSystemTime + MSI_SetupVars[SETUP_RANDOMS_WAIT];
+  NextRandCheck := GetSystemTime + MSI_Settings[SETUP_RANDOMS_WAIT];
 end;
 
 (*
@@ -383,7 +503,7 @@ begin
     if (not LoggedIn) then
       MSI_Players[CurrentPlayer].ReportInfo.FalseReason := 'Failed to solve random';
 
-  NextRandCheck := GetSystemTime + MSI_SetupVars[SETUP_RANDOMS_WAIT];
+  NextRandCheck := GetSystemTime + MSI_Settings[SETUP_RANDOMS_WAIT];
 end;
 
 (*
@@ -425,35 +545,36 @@ begin
   begin
     MSI_SubDebug('Resting..');
     if SetRest then
-      case Random(75) of
-        0..50:
-          begin
-            GetMousePos(x, y);
-            if InRange(x, MSx1, MIx2) then
-              if Random(2) = 1 then
-                while (not (x > MIx2)) do
-                  x := x + 20
-              else
-                while (not (x < MSx1)) do
-                  x := x - 20;
+      while ((getMMLevels('run', t) <= (30 + random(30))) and loggedIn) do
+        case Random(75) of
+          0..50:
+            begin
+              GetMousePos(x, y);
+              if InRange(x, MSx1, MIx2) then
+                if Random(2) = 1 then
+                  while (not (x > MIx2)) do
+                    x := x + 20
+                else
+                  while (not (x < MSx1)) do
+                    x := x - 20;
 
-            if InRange(y, MSy1, MIy2) then
-              if Random(2) = 1 then
-                while (not (y > MIy2)) do
-                  y := y + 20
-              else
-                while (not (y < MSy1)) do
-                  y := y - 20;
+              if InRange(y, MSy1, MIy2) then
+                if Random(2) = 1 then
+                  while (not (y > MIy2)) do
+                    y := y + 20
+                else
+                  while (not (y < MSy1)) do
+                    y := y - 20;
 
-            MMouse(x, y, 0, 0);
-          end;
+              MMouse(x, y, 0, 0);
+            end;
 
-        51..55:
-          SleepAndMoveMouse(5000);
+          51..55:
+            SleepAndMoveMouse(5000);
 
-        56:
-          ExamineInv;
-      end;
+          56:
+            ExamineInv;
+        end;
   end;
 
   Result := setRun(true);

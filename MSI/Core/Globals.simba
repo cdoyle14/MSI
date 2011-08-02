@@ -28,7 +28,8 @@ different locations around Runescape.
   | VW: Varrock West
   | FW: Falador West
   | FE: Falador East
-  | CG: Castle Guards
+  | MG: Mining Guild
+  | CG: Crafting Guild
   | DW: Dark Wizards
   | SO: Stronghold Of *
   | AK: Al Kharid
@@ -106,28 +107,31 @@ const
   SCRIPT_SV_MAPLES  = 23;
   SCRIPT_SV_YEWS    = 24;
   SCRIPT_EV_YEWS    = 25;
+  SCRIPT_IVY        = 26;
 
   // Mining
   SCRIPT_POWER_MINER = 30;
-  SCRIPT_VE_MINER    = 31;
-  SCRIPT_VW_MINER    = 32;
-  SCRIPT_LSW_MINER   = 33;
-  SCRIPT_BBV_MINER   = 34;
-  SCRIPT_RM_CLAY     = 35;
-  SCRIPT_RM_TIN      = 36;
-  SCRIPT_RM_COPPER   = 37;
-  SCRIPT_RM_IRON_1   = 38;
-  SCRIPT_RM_IRON_2   = 39;
-  SCRIPT_RM_GOLD     = 40;
-  SCRIPT_GUILD_MINER = 41; // SRL Members+ only
-  SCRIPT_DB_CLAY     = 42;
-  SCRIPT_FW_MINER    = 43;
+  SCRIPT_VE_MINER = 31;
+  SCRIPT_VW_MINER = 32;
+  SCRIPT_LSW_MINER = 33;
+  SCRIPT_BBV_MINER = 34;
+  SCRIPT_RM_MINER_NORTH = 35;
+  SCRIPT_RM_MINER_EAST = 36;
+  SCRIPT_RM_MINER_SOUTH = 37;
+  SCRIPT_RM_MINER_WEST = 38;
+  SCRIPT_GUILD_MINER = 39;
+  SCRIPT_DB_CLAY = 40;
+  SCRIPT_FW_MINER = 41;
+  SCRIPT_AK_MINER_SOUTH = 42;
+  SCRIPT_AK_MINER_CENTRAL = 43;
+  SCRIPT_AK_MINER_NORTH = 44;
+  SCRIPT_CG_MINER = 45;
 
   // Fishing
   SCRIPT_POWER_FISHER  = 50;
   SCRIPT_DB_FISHER     = 51;
   SCRIPT_BBV_FISHER    = 52;
-  SCRIPT_KJ_NOTER      = 53; // SRL Members+ only
+  SCRIPT_KJ_NOTER      = 53;
   SCRIPT_CB_FISHER     = 54;
 
   // Cooking
@@ -231,10 +235,11 @@ const
     LOC_VE_BANK     = 12;
     LOC_VE_MINE     = 13;
     LOC_VE_FOUNTAIN = 14;
+    LOC_VE_IVY      = 15;
 
     // West
-    LOC_VW_BANK  = 15;
-    LOC_VW_MINE  = 16;
+    LOC_VW_BANK  = 16;
+    LOC_VW_MINE  = 17;
 
     // Grand Exchange
     LOC_GE_BANK  = 20;
@@ -251,13 +256,11 @@ const
 
   // Rimmington
   LOC_RM_YEWS    = 40;
-  LOC_RM_CLAY    = 41;
-  LOC_RM_TIN     = 42;
-  LOC_RM_COPPER  = 43;
-  LOC_RM_IRON_1  = 44;
-  LOC_RM_IRON_2  = 45;
-  LOC_RM_GOLD    = 46;
-  LOC_RM_WILLOWS = 47;
+  LOC_RM_MINE_NORTH   = 41;
+  LOC_RM_MINE_EAST    = 42;
+  LOC_RM_MINE_SOUTH   = 43;
+  LOC_RM_MINE_WEST    = 44;
+  LOC_RM_WILLOWS = 45;
 
   // Falador
   LOC_FE_BANK    = 50;
@@ -273,6 +276,7 @@ const
   // Lumbridge
   LOC_LSW_MINE   = 70;
   LOC_LSE_MINE   = 71;
+  LOC_LB_SPAWN   = 72;
 
   // Edgeville
   LOC_EV_BANK    = 80;
@@ -291,20 +295,24 @@ const
 
   // Guilds
   LOC_GUILD_MINE = 110;
+  LOC_CG_MINE    = 111;
 
   // Al-Kharid
   LOC_AK_BANK   = 120;
   LOC_AK_RANGE  = 121;
+  LOC_AK_MINE_SOUTH   = 122;
+  LOC_AK_MINE_CENTRAL = 123;
+  LOC_AK_MINE_NORTH   = 124;
 
   // Karamja
-  LOC_KJ_STILES = 122;
-  LOC_KJ_FISH   = 123;
+  LOC_KJ_STILES = 130;
+  LOC_KJ_FISH   = 131;
 
   // Catherby
-  LOC_CB_BANK = 130;
-  LOC_CB_FISH   = 131;
+  LOC_CB_BANK = 140;
+  LOC_CB_FISH   = 141;
 
-  LOC_ARRAY_LENGTH = 131; // Change to the highest location constant
+  LOC_ARRAY_LENGTH = 141; // Change to the highest location constant
 
 (*
 Requirement Constants
@@ -397,6 +405,7 @@ const
   FISH_RAW_TUNA       = 78;
   FISH_RAW_LOBSTER    = 79;
   FISH_RAW_SWORDFISH  = 80;
+  FISH_RAW_SHARK      = 81;
 
   FISH_COOKED_SHRIMP    = 100;
   FISH_COOKED_CRAYFISH  = 101;
@@ -409,6 +418,7 @@ const
   FISH_COOKED_TUNA      = 108;
   FISH_COOKED_LOBSTER   = 109;
   FISH_COOKED_SWORDFISH = 110;
+  FISH_COOKED_SHARK     = 111;
 
   GEM_UNCUT_SAPPHIRE = 120;
   GEM_UNCUT_EMERALD  = 121;
@@ -489,6 +499,7 @@ const
   TREE_MAGIC      = 15;
   TREE_WILLOW_NEW = 16;
   TREE_YEW_NEW    = 17;
+  TREE_IVY        = 18;
 
   // Rocks
   ROCK_CLAY       = 20;
@@ -527,9 +538,10 @@ const
   COOKSPOT_AK_RANGE = 60;
 
   // Obstacles
-  LADDER_DOWN_MINE_GUILD      = 70;
-  FALADOR_WEST_CRUMBLING_WALL = 71;
-  LADDER_UP_MINE_GUILD        = 80;
+  LADDER_MG_DOWN = 70;
+  LADDER_MG_UP   = 71;
+  WALL_FW        = 72;
+  DOOR_NORMAL    = 73;
 
   // NPCs
   NPC_STILES        = 93;
@@ -562,15 +574,19 @@ Example:
 
   function GetGuildLadder(): TObstacle;
   begin
-    Result := MSI_Obstacles[OBS_LADDER_DOWN_MINE_GUILD];
+    Result := MSI_GetObstacle(OBS_MG_LADDER_DOWN);
   end;
 *)
 const
-  OBS_LADDER_DOWN_MINE_GUILD = 10;
-  OBS_FALADOR_WEST_CRUMBLING_WALL = 11;
-  OBS_LADDER_UP_MINE_GUILD   = 20;
+  // Represents TPath's "Obstacles" array elements
+  OBS_LOC_TO   = 0;
+  OBS_LOC_FROM = 1;
 
-  OBS_ARRAY_LENGTH = 20; // Change to the highest obstacle constant
+  OBS_LADDER_MG_DOWN = 10;
+  OBS_LADDER_MG_UP   = 11;
+  OBS_WALL_FW        = 20;
+  OBS_DOOR_CG_IN     = 30;
+  OBS_DOOR_CG_OUT    = 31;
 
 (*
 Spells Constants
@@ -650,6 +666,7 @@ const
 
   ANIM_ALCH_LOW  = 10;
   ANIM_ALCH_HIGH = 11;
+  ANIM_TELE_HOME = 12;
 
   ANIM_FISHING   = 20;
   ANIM_CHOPPING  = 21;
@@ -683,6 +700,7 @@ const
   MATERIAL_TUNA        = 8;
   MATERIAL_LOBSTER     = 9;
   MATERIAL_SWORDFISH   = 10;
+  MATERIAL_SHARK       = 11;
 
   // Money making
   MATERIAL_CLAY        = 20;
@@ -720,7 +738,7 @@ const
 Setup Constants
 ~~~~~~~~~~~~~~~
 
-Represents the indexes of MSI_SetupVars which are set by the user. Used just
+Represents the indexes of MSI_Settings which are set by the user. Used just
 like the other MSI global arrays.
 *)
 const
@@ -743,6 +761,19 @@ const
   SETUP_WALKING       = 32;
 
   SETUP_ARRAY_LENGTH  = 32;
+
+(*
+Hook Constants
+~~~~~~~~~~~~~~
+
+Represents the indexes of MSI_HookBroken boolean array that is used to check
+for broken hooks after an RS update.
+*)
+const
+  HOOK_COUNT = 3;
+    HOOK_WALKING     = 0;
+    HOOK_LEVEL_SKILL = 1;
+    HOOK_RANDOMS     = 2;
 
 {==============================================================================\
 |                                  Types                                       |
@@ -775,6 +806,7 @@ type
     ExcludeSelf      : Boolean;       // Exclude pixels in a box around the player
     RightClickOnly   : Boolean;
     WaitToMove       : Boolean;       // When clicked, wait till we have stopped moving? Calls Flag;
+    MultiClick       : Boolean;       // Milti-click the object like a human would
     Track            : Boolean;       // When clicked, track the object while the player moves? Calls MSI_TrackObject;
     MaxTime          : Integer;       // Max time (in ms) to wait for the object to disappear
     AssociatedItems  : TIntegerArray; // The items that can be gained from interacting with object
@@ -855,12 +887,13 @@ Stores all the different path information. Used when declaring a TScript record.
 *)
 type
   TPath = record
+    Name       : String;
     StartLoc   : Integer;
     EndLoc     : Integer;
     Reflection : T2DPointArray;
     Color      : T2DPointArray;
     SPSAreas   : TStringArray;
-    Obstacles  : TIntegerArray;
+    Obstacles  : array[0..2] of TIntegerArray;
   end;
 
 (*
@@ -1049,6 +1082,7 @@ type
     Tiles       : TPointArray; // Reflection tiles
     Points      : TPointArray; // Color tiles (SPS)
     MinDistance : Integer;     // Min distance (in pixels) for the player to be from the relocation point
+    DeathPath   : TPath;       // So the player can start anywhere in RS (applies only to script starting locations)
   end;
 
 (*
@@ -1062,13 +1096,12 @@ type
   TObstacle = record
     Name       : string;
     Constant   : Integer;       // Obstacle constant
-    MirConst   : Integer;       // Obstacle's mirror constant
+    MirText    : TStringArray;  // Text that may appear in the chat box
     ObjConst   : Integer;       // Object constant
     ObjMir     : Integer;       // Object's mirror constant
+    ObjMirArea : TBox;          // Obstacle's mirror search area
     Camera     : TVariantArray; // Changes the camera angle and height
-    StartTiles : TPointArray;   // The tiles the obstacle is on
     EndTiles   : TPointArray;   // Possible tiles the player will end up on
-    Solve      : function(i: Integer): Boolean;
   end;
 
   TObstacleArray = array of TObstacle;
@@ -1127,7 +1160,6 @@ var
   CurrDebugLevel   : Integer;
   CurrentExtra     : Integer;
   CurrentPointer   : Integer;
-  ReflectionBroken : Boolean;
   ScriptStart      : string;
   NextAntiban      : Integer;
   NextRandCheck    : Integer;
@@ -1135,14 +1167,14 @@ var
 
 // Arrays that store all the necessary "go-to" information for MSI
 var
-  MSI_SetupVars : array[0..SETUP_ARRAY_LENGTH] of Variant;
+  MSI_Settings  : array[0..SETUP_ARRAY_LENGTH] of variant;
+  MSI_HookBroken: array[0..(HOOK_COUNT - 1)] of boolean;
   MSI_Players   : TPlayerInfoArray;
   MSI_Items     : array[0..ITEM_ARRAY_LENGTH] of TItem;
   MSI_Locations : array[0..LOC_ARRAY_LENGTH] of TLocation;
   MSI_Scripts   : array[0..SCRIPT_ARRAY_LENGTH] of TScript;
   MSI_Extras    : TExtraArray;
   MSI_Pointers  : array[0..POINTER_ARRAY_LENGTH] of TPointer;
-  MSI_Obstacles : array[0..OBS_ARRAY_LENGTH] of TObstacle;
   MSI_Spells    : array[0..SPELL_ARRAY_LENGTH] of TMagicSpell;
 
 function MSI_GetCurrentScript(): TScript;
